@@ -1,0 +1,16 @@
+{
+  "name": "SahayLink — Disaster Coordination Portal",
+  "short_name": "SahayLink",
+  "description": "Offline-capable disaster coordination portal for relief workers",
+  "start_url": "/incidents",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}
