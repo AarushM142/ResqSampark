@@ -4,7 +4,7 @@
 // Merge = keep the link (human to review later). Dismiss = clears related_incident_ids for confirmed distinct incidents.
 // Per spec: "flag them non-blockingly (sync still completes) with a quick merge/dismiss action"
 
-import Link from "next/link";
+import { TransitionLink } from "@/app/components/TransitionLink";
 
 interface Props {
   incidentId: string;
@@ -38,11 +38,13 @@ export function DuplicateFlagBanner({ incidentId, relatedIds, onDismiss }: Props
   }
 
   return (
-    <div className="rounded-xl border border-yellow-700 bg-yellow-950/30 p-4 space-y-3">
+    <div className="rounded-2xl border border-yellow-700 bg-yellow-950/30 overflow-hidden animate-fade-in-up shadow-lg shadow-black/10">
+      <div className="h-1 hazard-stripe" />
+      <div className="p-4 space-y-3">
       <div className="flex items-start gap-2">
         <span className="text-yellow-400 text-lg">⚠️</span>
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-yellow-300">
+          <p className="console-label text-sm font-semibold text-yellow-300">
             Possible Duplicate Incident
           </p>
           <p className="text-xs text-yellow-400/80">
@@ -56,21 +58,23 @@ export function DuplicateFlagBanner({ incidentId, relatedIds, onDismiss }: Props
 
       <div className="flex gap-2 flex-wrap">
         {relatedIds.map((id) => (
-          <Link
+          <TransitionLink
             key={id}
             href={`/incidents/${id}`}
-            className="text-xs px-2 py-1 rounded border border-yellow-700 text-yellow-400 hover:text-yellow-200 hover:border-yellow-500 transition-colors"
+            direction="forward"
+            className="font-mono text-xs px-2.5 py-1 rounded-full border border-yellow-700 text-yellow-400 hover:text-yellow-300 hover:border-yellow-600 transition-colors"
           >
             View {id.slice(0, 8)}…
-          </Link>
+          </TransitionLink>
         ))}
         <button
           id="dismiss-duplicate-btn"
           onClick={handleDismiss}
-          className="text-xs px-2 py-1 rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
+          className="text-xs px-2.5 py-1 rounded-full border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
         >
           ✕ Dismiss (confirmed distinct)
         </button>
+      </div>
       </div>
     </div>
   );

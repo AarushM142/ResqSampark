@@ -65,7 +65,7 @@ export function ChatFeed({ messages, incidentId, isTeamMember }: { messages: Cha
   }
 
   return (
-    <div className="flex flex-col h-[500px] border border-gray-700 rounded-xl bg-gray-900 overflow-hidden">
+    <div className="flex flex-col h-[500px] border border-gray-800 rounded-2xl bg-[var(--bg)] overflow-hidden shadow-sm">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
       {allMessages.map(msg => {
         const isMe = msg.authorId === currentDeviceId;
@@ -74,7 +74,7 @@ export function ChatFeed({ messages, incidentId, isTeamMember }: { messages: Cha
         if (isSystem) {
           return (
             <div key={msg.id} className="flex flex-col items-center">
-              <div className="bg-gray-800 text-gray-400 text-[11px] px-3 py-1 rounded-full border border-gray-700 my-1">
+              <div className="bg-gray-900 text-gray-500 text-[11px] px-3 py-1 rounded-full border border-gray-800 my-1">
                 {msg.body}
               </div>
             </div>
@@ -84,16 +84,16 @@ export function ChatFeed({ messages, incidentId, isTeamMember }: { messages: Cha
         return (
           <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-3`}>
             <div className={`flex flex-col max-w-[85%] ${isMe ? 'items-end' : 'items-start'}`}>
-              <div className={`text-[10px] text-gray-500 mb-1 px-1 flex gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
+              <div className={`font-mono text-[10px] text-gray-500 mb-1 px-1 flex gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
                 {!isMe && <span className="font-semibold text-gray-400">{msg.authorName}</span>}
                 <span>{new Date(msg.clientTimestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
               </div>
-              <div className={`px-3 py-2 rounded-2xl shadow-sm ${isMe ? 'bg-blue-600 text-white rounded-br-sm' : 'bg-gray-800 border border-gray-700 text-gray-200 rounded-bl-sm'}`}>
+              <div className={`px-3.5 py-2 rounded-2xl shadow-sm ${isMe ? 'bg-blue-400 text-white rounded-br-sm' : 'bg-gray-900 border border-gray-800 text-gray-200 rounded-bl-sm'}`}>
                 <p className="text-sm leading-snug">{msg.body}</p>
               </div>
               {isMe && (
-                <span className="text-[10px] text-gray-500 mt-1 px-1">
-                  {msg.syncedAt ? "✓ Sent" : "Sending..."}
+                <span className="text-[11px] text-gray-500 mt-1 px-1">
+                  {msg.syncedAt ? "Sent" : "Sending..."}
                 </span>
               )}
             </div>
@@ -105,20 +105,20 @@ export function ChatFeed({ messages, incidentId, isTeamMember }: { messages: Cha
       )}
       </div>
       {isTeamMember ? (
-        <form onSubmit={handleSend} className="p-3 border-t border-gray-800 bg-gray-950 flex gap-2">
-          <input 
+        <form onSubmit={handleSend} className="p-3 border-t border-gray-800 bg-[var(--bg-soft)] flex gap-2">
+          <input
             type="text"
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-[var(--bg)] border border-gray-700 rounded-full px-3.5 py-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500"
           />
-          <button type="submit" disabled={!body.trim()} className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-lg px-4 py-2 text-sm font-semibold transition-colors">
+          <button type="submit" disabled={!body.trim()} className="bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white rounded-full px-4 py-2 text-sm font-semibold transition-opacity">
             Send
           </button>
         </form>
       ) : (
-        <div className="p-3 border-t border-gray-800 bg-gray-950 text-center">
+        <div className="p-3 border-t border-gray-800 bg-[var(--bg-soft)] text-center">
           <p className="text-xs text-gray-500">You must join the team to chat.</p>
         </div>
       )}

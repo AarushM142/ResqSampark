@@ -4,7 +4,6 @@
 // Client component so we can handle the filter dropdown interactively.
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
 import type { Incident } from "@/types";
 import { IncidentCard } from "@/app/components/IncidentCard";
 
@@ -12,10 +11,10 @@ type StatusFilter = "ALL" | "UNASSIGNED" | "RECRUITING" | "IN_PROGRESS" | "RESOL
 
 const FILTER_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "ALL", label: "All Incidents" },
-  { value: "UNASSIGNED", label: "🔴 Unassigned" },
-  { value: "RECRUITING", label: "🟡 Recruiting" },
-  { value: "IN_PROGRESS", label: "🔵 In Progress" },
-  { value: "RESOLVED", label: "🟢 Resolved" },
+  { value: "UNASSIGNED", label: "Unassigned" },
+  { value: "RECRUITING", label: "Recruiting" },
+  { value: "IN_PROGRESS", label: "In Progress" },
+  { value: "RESOLVED", label: "Resolved" },
 ];
 
 export default function IncidentsPage() {
@@ -72,66 +71,70 @@ export default function IncidentsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-100">
-            SahayLink
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Disaster Coordination Portal
-          </p>
-        </div>
-        <Link
-          href="/incidents/new"
-          id="report-incident-btn"
-          className="inline-flex items-center gap-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold px-4 py-2 text-sm transition-colors"
-        >
-          ＋ Report Incident
-        </Link>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-100 leading-tight">
+          Incidents
+        </h1>
+        <p className="text-[13px] text-gray-500 leading-tight flex items-center gap-1.5 mt-0.5">
+          <span className="relative inline-flex w-1.5 h-1.5 text-green-500">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-green-500" />
+            <span className="radar-ping" />
+          </span>
+          Live — Disaster Coordination Network
+        </p>
       </div>
 
       {/* Status filter */}
       <div className="flex items-center gap-2 flex-wrap">
-        {FILTER_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            id={`filter-${opt.value.toLowerCase()}`}
-            onClick={() => setFilter(opt.value)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
-              filter === opt.value
-                ? "bg-gray-700 border-gray-500 text-gray-100"
-                : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
+        <div className="flex items-center gap-1 flex-wrap rounded-full border border-gray-800 bg-gray-900 p-1">
+          {FILTER_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              id={`filter-${opt.value.toLowerCase()}`}
+              onClick={() => setFilter(opt.value)}
+              className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
+                filter === opt.value
+                  ? "bg-[var(--ink)] text-white"
+                  : "bg-transparent text-gray-500 hover:text-gray-200"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
         <button
           id="refresh-btn"
           onClick={fetchIncidents}
-          className="ml-auto px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:text-gray-200 border border-gray-800 hover:border-gray-600 transition-colors"
+          className="ml-auto px-3.5 py-1.5 rounded-full text-[13px] text-gray-500 hover:text-gray-200 border border-gray-800 hover:border-gray-600 transition-colors cursor-pointer"
         >
-          ↺ Refresh
+          Refresh
         </button>
       </div>
 
       {/* Incident list */}
       {loading ? (
-        <div className="text-center py-16 text-gray-500">
-          Loading incidents…
+        <div className="space-y-3">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-gray-800 bg-gray-900 p-4 h-[132px] overflow-hidden relative"
+            >
+              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-gradient-to-r from-transparent via-gray-800/40 to-transparent" />
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="rounded-lg border border-red-800 bg-red-950/30 p-4 text-red-400 text-sm">
           Error: {error}
         </div>
       ) : incidents.length === 0 ? (
-        <div className="text-center py-16 text-gray-600">
+        <div className="text-center py-16 text-gray-600 animate-fade-in-up">
           <p className="text-4xl mb-3">📋</p>
           <p>No incidents {filter !== "ALL" ? `with status ${filter}` : "yet"}.</p>
           {filter !== "ALL" && (
             <button
               onClick={() => setFilter("ALL")}
-              className="mt-2 text-sm text-blue-400 hover:underline"
+              className="mt-2 text-sm text-blue-400 hover:underline cursor-pointer"
             >
               Show all
             </button>
@@ -139,11 +142,17 @@ export default function IncidentsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-xs text-gray-600 tabular-nums">
-            {incidents.length} incident{incidents.length !== 1 ? "s" : ""}
+          <p className="console-label text-[11px] text-gray-600 tabular-nums">
+            {incidents.length} incident{incidents.length !== 1 ? "s" : ""} tracked
           </p>
-          {incidents.map((incident) => (
-            <IncidentCard key={incident.id} incident={incident} onRefresh={fetchIncidents} />
+          {incidents.map((incident, i) => (
+            <div
+              key={incident.id}
+              className="animate-fade-in-up"
+              style={{ animationDelay: `${Math.min(i, 8) * 30}ms` }}
+            >
+              <IncidentCard incident={incident} onRefresh={fetchIncidents} />
+            </div>
           ))}
         </div>
       )}

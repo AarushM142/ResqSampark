@@ -11,10 +11,14 @@ export function ActivityLog({ entries }: { entries: ActivityLogEntry[] }) {
   }
 
   return (
-    <ol className="space-y-2">
+    <ol className="space-y-1 font-mono rounded-lg border border-gray-800 bg-gray-900 p-2">
       {[...entries].reverse().map((entry, i) => (
-        <li key={i} className="flex gap-3 text-sm">
-          <span className="text-gray-500 shrink-0 tabular-nums w-36">
+        <li
+          key={i}
+          className="flex gap-3 text-[13px] rounded-md px-2 py-1.5 hover:bg-gray-800/60 transition-colors"
+        >
+          <span className="text-green-500/70 shrink-0">&gt;</span>
+          <span className="text-gray-500 shrink-0 tabular-nums w-32">
             {new Date(entry.timestamp).toLocaleTimeString("en-IN", {
               hour: "2-digit",
               minute: "2-digit",

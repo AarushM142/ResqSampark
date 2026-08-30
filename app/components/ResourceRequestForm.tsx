@@ -39,16 +39,16 @@ function QuantityInput({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-medium text-gray-400">{label}</label>
+      <label className="console-label text-[11px] font-medium text-gray-400">{label}</label>
       <div className="flex gap-1 flex-wrap">
         {Object.entries(presets).map(([label, qty]) => (
           <button
             key={label}
             type="button"
             onClick={() => onChange(value === qty ? undefined : qty)}
-            className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
+            className={`px-2.5 py-1 rounded-full text-[12px] font-medium border transition-all ${
               value === qty
-                ? "bg-blue-700 border-blue-500 text-white"
+                ? "bg-[var(--ink)] border-[var(--ink)] text-white scale-[1.03]"
                 : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200"
             }`}
           >
@@ -142,8 +142,8 @@ export function ResourceRequestForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-amber-800 bg-amber-950/10 p-4">
-      <h3 className="font-semibold text-amber-300 text-sm">Request Resources</h3>
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-gray-800 bg-gray-900 p-4 animate-fade-in-up">
+      <h3 className="font-semibold text-gray-100 text-sm">Request Resources</h3>
 
       {/* Quantity items */}
       <div className="space-y-3">
@@ -172,7 +172,7 @@ export function ResourceRequestForm({
 
       {/* Boolean items */}
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-gray-400">Additional Resources</label>
+        <label className="console-label text-[11px] font-medium text-gray-400">Additional Resources</label>
         <div className="flex gap-2 flex-wrap">
           {(
             [
@@ -185,9 +185,9 @@ export function ResourceRequestForm({
               key={key}
               type="button"
               onClick={() => updateItem(key, !items[key] as ResourceItems[typeof key])}
-              className={`px-3 py-1.5 rounded text-xs font-medium border transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                 items[key]
-                  ? "bg-green-800 border-green-600 text-green-100"
+                  ? "bg-[var(--ink)] border-[var(--ink)] text-white"
                   : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500"
               }`}
             >
@@ -199,20 +199,20 @@ export function ResourceRequestForm({
 
       {/* Priority */}
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-gray-400">Priority</label>
+        <label className="console-label text-[11px] font-medium text-gray-400">Priority</label>
         <div className="flex gap-2">
           {(["LOW", "MODERATE", "CRITICAL"] as const).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPriority(p)}
-              className={`px-3 py-1.5 rounded text-xs font-semibold border transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-colors ${
                 priority === p
                   ? p === "CRITICAL"
-                    ? "bg-red-800 border-red-600 text-red-100"
+                    ? "bg-red-400 border-red-400 text-white"
                     : p === "MODERATE"
-                    ? "bg-orange-800 border-orange-600 text-orange-100"
-                    : "bg-yellow-800 border-yellow-600 text-yellow-100"
+                    ? "bg-orange-400 border-orange-400 text-white"
+                    : "bg-yellow-400 border-yellow-400 text-white"
                   : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500"
               }`}
             >
@@ -229,7 +229,7 @@ export function ResourceRequestForm({
           type="submit"
           id="submit-resource-btn"
           disabled={submitting || !hasAnyItem}
-          className="rounded-lg bg-amber-700 hover:bg-amber-600 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 transition-colors"
+          className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 transition-opacity"
         >
           {submitting ? "Submitting…" : "Submit Request"}
         </button>

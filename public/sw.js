@@ -1,5 +1,5 @@
 // public/sw.js
-// Service Worker for SahayLink — caches app routes, static assets, and Next.js JS chunks
+// Service Worker for ResQSampark — caches app routes, static assets, and Next.js JS chunks
 // so full page navigations work even when network sockets are completely offline.
 
 const CACHE_NAME = "sahaylink-cache-v1";

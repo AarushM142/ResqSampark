@@ -1,6 +1,6 @@
 {
-  "name": "SahayLink — Disaster Coordination Portal",
-  "short_name": "SahayLink",
+  "name": "ResQSampark — Disaster Coordination Portal",
+  "short_name": "ResQSampark",
   "description": "Offline-capable disaster coordination portal for relief workers",
   "start_url": "/incidents",
   "display": "standalone",

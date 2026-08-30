@@ -10,25 +10,25 @@ import type { Incident } from "@/types";
 
 type Severity = Incident["severity"];
 
-const SEVERITY_CONFIG: Record<Severity, { label: string; classes: string }> = {
-  CRITICAL: {
-    label: "🔴 CRITICAL",
-    classes: "bg-red-900/60 text-red-300 border border-red-700",
-  },
-  MODERATE: {
-    label: "🟠 MODERATE",
-    classes: "bg-orange-900/60 text-orange-300 border border-orange-700",
-  },
-  LOW: {
-    label: "🟡 LOW",
-    classes: "bg-yellow-900/40 text-yellow-300 border border-yellow-700",
-  },
+const SEVERITY_CONFIG: Record<Severity, { label: string; color: string }> = {
+  CRITICAL: { label: "Critical", color: "var(--accent)" },
+  MODERATE: { label: "Moderate", color: "var(--amber-text)" },
+  LOW: { label: "Low", color: "var(--green-text)" },
 };
 
 export function SeverityBadge({ severity }: { severity: Severity }) {
   const cfg = SEVERITY_CONFIG[severity];
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${cfg.classes}`}>
+    <span
+      className="inline-flex items-center gap-1.5 text-[13px] font-semibold"
+      style={{ color: cfg.color }}
+    >
+      {severity === "CRITICAL" && (
+        <span
+          className="w-1.5 h-1.5 rounded-full animate-alarm-blink"
+          style={{ background: cfg.color }}
+        />
+      )}
       {cfg.label}
     </span>
   );
@@ -41,32 +41,26 @@ export function SeverityBadge({ severity }: { severity: Severity }) {
 
 type Status = Incident["status"];
 
-const STATUS_CONFIG: Record<
-  Status,
-  { label: string; classes: string }
-> = {
-  UNASSIGNED: {
-    label: "🔴 UNASSIGNED",
-    classes: "bg-red-900/60 text-red-200 border border-red-700",
-  },
-  RECRUITING: {
-    label: "🟡 RECRUITING",
-    classes: "bg-amber-900/60 text-amber-200 border border-amber-600",
-  },
-  IN_PROGRESS: {
-    label: "🔵 IN PROGRESS",
-    classes: "bg-blue-900/60 text-blue-200 border border-blue-700",
-  },
-  RESOLVED: {
-    label: "🟢 RESOLVED",
-    classes: "bg-green-900/40 text-green-300 border border-green-700",
-  },
+const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
+  UNASSIGNED: { label: "Unassigned", color: "var(--accent)" },
+  RECRUITING: { label: "Recruiting", color: "var(--amber-text)" },
+  IN_PROGRESS: { label: "In Progress", color: "var(--blue-text)" },
+  RESOLVED: { label: "Resolved", color: "var(--green-text)" },
 };
 
 export function StatusBadge({ status }: { status: Status }) {
   const cfg = STATUS_CONFIG[status];
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${cfg.classes}`}>
+    <span
+      className="inline-flex items-center gap-1.5 text-[13px] font-semibold"
+      style={{ color: cfg.color }}
+    >
+      {status === "UNASSIGNED" && (
+        <span
+          className="w-1.5 h-1.5 rounded-full animate-alarm-blink"
+          style={{ background: cfg.color }}
+        />
+      )}
       {cfg.label}
     </span>
   );

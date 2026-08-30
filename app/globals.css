@@ -1,16 +1,537 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+ * SahayLink / ResQSampark — light editorial theme
+ * Palette taken from the approved "ResQSampark Official Redesign" canvas:
+ * warm white ground, near-black ink, a single red-orange accent for
+ * critical/urgent state, and muted amber/blue/green for the other semantic
+ * states. No dark "ops console" chrome — clean, calm, high-contrast.
+ * ------------------------------------------------------------------------- */
+
 :root {
-  --background: #030712; /* gray-950 */
-  --foreground: #f9fafb; /* gray-50 */
+  --ink: oklch(15% 0.005 258);
+  --body-text: oklch(35% 0.006 258);
+  --muted: oklch(55% 0.006 258);
+  --faint: oklch(72% 0.004 258);
+  --bg: oklch(100% 0 0);
+  --bg-soft: oklch(98% 0.002 258);
+  --border: oklch(90% 0.004 258);
+  --accent: oklch(52% 0.19 27);
+  --accent-soft: oklch(95% 0.03 27);
+  --amber-text: oklch(55% 0.13 75);
+  --blue-text: oklch(50% 0.13 250);
+  --green-text: oklch(48% 0.10 150);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --font-mono: var(--font-mono, ui-monospace, "IBM Plex Mono", monospace);
+}
+
+/*
+ * The rest of the app was authored against Tailwind's default gray/red/
+ * orange/amber/yellow/blue/green ramps using the DARK-theme convention
+ * (e.g. bg-red-900 = tinted dark surface, text-red-300 = bright readable
+ * text, border-red-700 = visible border against a near-black page).
+ *
+ * Rather than re-touch every className, we reverse the lightness ordering
+ * of each ramp so every existing class keeps the same ROLE (surface tint /
+ * readable text / visible border) but now reads correctly on a white page:
+ * low numbers become dark (ink-like), high numbers become light (paper-like).
+ * Hue and chroma per family are unchanged, so "redness"/"blueness" etc. is
+ * preserved — only the lightness axis flips.
+ */
+@theme {
+  --color-gray-50: oklch(15% 0.006 258);
+  --color-gray-100: oklch(22% 0.006 258);
+  --color-gray-200: oklch(29% 0.006 258);
+  --color-gray-300: oklch(38% 0.006 258);
+  --color-gray-400: oklch(47% 0.005 258);
+  --color-gray-500: oklch(57% 0.005 258);
+  --color-gray-600: oklch(68% 0.005 258);
+  --color-gray-700: oklch(80% 0.004 258);
+  --color-gray-800: oklch(90% 0.004 258);
+  --color-gray-900: oklch(96% 0.003 258);
+  --color-gray-950: oklch(99% 0.002 258);
+
+  --color-red-50: oklch(22% 0.10 27);
+  --color-red-100: oklch(30% 0.13 27);
+  --color-red-200: oklch(38% 0.16 27);
+  --color-red-300: oklch(46% 0.18 27);
+  --color-red-400: oklch(52% 0.19 27);
+  --color-red-500: oklch(58% 0.18 27);
+  --color-red-600: oklch(66% 0.15 27);
+  --color-red-700: oklch(76% 0.11 27);
+  --color-red-800: oklch(87% 0.07 27);
+  --color-red-900: oklch(94% 0.04 27);
+  --color-red-950: oklch(98% 0.02 27);
+
+  --color-orange-50: oklch(24% 0.09 50);
+  --color-orange-100: oklch(32% 0.12 50);
+  --color-orange-200: oklch(40% 0.15 50);
+  --color-orange-300: oklch(48% 0.17 50);
+  --color-orange-400: oklch(55% 0.18 50);
+  --color-orange-500: oklch(62% 0.17 50);
+  --color-orange-600: oklch(70% 0.14 50);
+  --color-orange-700: oklch(80% 0.10 50);
+  --color-orange-800: oklch(89% 0.06 50);
+  --color-orange-900: oklch(95% 0.035 50);
+  --color-orange-950: oklch(98% 0.02 50);
+
+  --color-amber-50: oklch(24% 0.07 75);
+  --color-amber-100: oklch(32% 0.09 75);
+  --color-amber-200: oklch(40% 0.11 75);
+  --color-amber-300: oklch(48% 0.12 75);
+  --color-amber-400: oklch(55% 0.13 75);
+  --color-amber-500: oklch(62% 0.13 75);
+  --color-amber-600: oklch(72% 0.12 75);
+  --color-amber-700: oklch(82% 0.09 75);
+  --color-amber-800: oklch(90% 0.06 75);
+  --color-amber-900: oklch(95% 0.035 75);
+  --color-amber-950: oklch(98% 0.02 75);
+
+  --color-yellow-50: oklch(26% 0.06 95);
+  --color-yellow-100: oklch(34% 0.08 95);
+  --color-yellow-200: oklch(42% 0.10 95);
+  --color-yellow-300: oklch(50% 0.11 95);
+  --color-yellow-400: oklch(58% 0.12 95);
+  --color-yellow-500: oklch(66% 0.12 95);
+  --color-yellow-600: oklch(76% 0.10 95);
+  --color-yellow-700: oklch(85% 0.07 95);
+  --color-yellow-800: oklch(92% 0.045 95);
+  --color-yellow-900: oklch(96% 0.025 95);
+  --color-yellow-950: oklch(98.5% 0.012 95);
+
+  --color-blue-50: oklch(20% 0.09 250);
+  --color-blue-100: oklch(28% 0.11 250);
+  --color-blue-200: oklch(36% 0.12 250);
+  --color-blue-300: oklch(44% 0.125 250);
+  --color-blue-400: oklch(50% 0.13 250);
+  --color-blue-500: oklch(58% 0.12 250);
+  --color-blue-600: oklch(68% 0.10 250);
+  --color-blue-700: oklch(79% 0.07 250);
+  --color-blue-800: oklch(88% 0.045 250);
+  --color-blue-900: oklch(95% 0.025 250);
+  --color-blue-950: oklch(98% 0.012 250);
+
+  --color-green-50: oklch(18% 0.06 150);
+  --color-green-100: oklch(26% 0.08 150);
+  --color-green-200: oklch(34% 0.09 150);
+  --color-green-300: oklch(42% 0.095 150);
+  --color-green-400: oklch(48% 0.10 150);
+  --color-green-500: oklch(55% 0.10 150);
+  --color-green-600: oklch(65% 0.09 150);
+  --color-green-700: oklch(77% 0.07 150);
+  --color-green-800: oklch(87% 0.045 150);
+  --color-green-900: oklch(94% 0.025 150);
+  --color-green-950: oklch(98% 0.012 150);
+}
+
+* {
+  scrollbar-color: var(--border) var(--bg-soft);
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--faint);
+}
+
+html {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  position: relative;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+input, select, textarea {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.25s ease-out both;
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* --- shared accents ----------------------------------------------------- */
+
+/* Critical flag: a solid accent bar (replaces the old dark-theme hazard
+   stripe — same "pay attention here" role, without the danger-tape motif). */
+.hazard-stripe {
+  background: var(--accent);
+}
+
+/* Live indicator: expanding ring behind a status dot. */
+@keyframes radar-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+.radar-ping {
+  position: relative;
+}
+
+.radar-ping::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: radar-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Small uppercase-mono "console" labels were part of the old tactical
+   theme; keep the class (used widely) but let it read as plain text now. */
+.console-label {
+  font-family: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+@keyframes alarm-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.animate-alarm-blink {
+  animation: alarm-blink 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-alarm-blink,
+  .animate-soft-pulse,
+  .radar-ping::before {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Page transitions — a hand-rolled "curtain" sweep (see
+ * lib/PageTransitionContext.tsx), the same technique behind most
+ * award-winning page-transition sites: a full-screen panel slides in from
+ * one edge to fully cover the viewport, the route swap happens invisibly
+ * underneath, then the panel continues in the same direction off the far
+ * edge — one continuous sweep, not a fade/pop.
+ * ------------------------------------------------------------------------- */
+
+.pt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 640px 480px at 50% 42%, oklch(52% 0.19 27 / 0.32), transparent 68%),
+    var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transform: translate3d(100%, 0, 0);
+}
+
+.pt-overlay-mark {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(34px, 7vw, 84px);
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  opacity: 0;
+  white-space: nowrap;
+}
+
+/* Decorative shapes — a soft blurred blob, a thin ring, and a small solid
+   dot, each popping in as the curtain covers and popping out as it clears. */
+.pt-shape {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+.pt-shape--blob {
+  width: 46vmin;
+  height: 46vmin;
+  top: 16%;
+  left: 10%;
+  background: radial-gradient(circle, oklch(52% 0.19 27 / 0.45), transparent 72%);
+  filter: blur(20px);
+  transform: scale(0.4);
+}
+.pt-shape--ring {
+  width: 30vmin;
+  height: 30vmin;
+  bottom: 12%;
+  right: 12%;
+  border: 1.5px solid oklch(88% 0.04 95 / 0.5);
+  transform: scale(0.6);
+}
+.pt-shape--dot {
+  width: 14px;
+  height: 14px;
+  top: 36%;
+  right: 20%;
+  background: var(--accent);
+  transform: scale(0);
+}
+
+@keyframes pt-cover-forward {
+  from { transform: translate3d(100%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+@keyframes pt-reveal-forward {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-100%, 0, 0); }
+}
+@keyframes pt-cover-back {
+  from { transform: translate3d(-100%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+@keyframes pt-reveal-back {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(100%, 0, 0); }
+}
+
+.pt-overlay.pt-covering.pt-forward {
+  animation: pt-cover-forward 620ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.pt-overlay.pt-revealing.pt-forward {
+  animation: pt-reveal-forward 620ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.pt-overlay.pt-covering.pt-back {
+  animation: pt-cover-back 620ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+.pt-overlay.pt-revealing.pt-back {
+  animation: pt-reveal-back 620ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+/* Wordmark parallax — it lags slightly behind the panel on the way in
+   (drifting to a stop just after the sweep finishes covering) and leads
+   slightly ahead on the way out, as if the camera's motion is dragging it
+   along at a different speed than the background. */
+@keyframes pt-mark-cover-forward {
+  from { opacity: 0; transform: translate3d(38%, 10px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes pt-mark-reveal-forward {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(-46%, -6px, 0); }
+}
+@keyframes pt-mark-cover-back {
+  from { opacity: 0; transform: translate3d(-38%, 10px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes pt-mark-reveal-back {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(46%, -6px, 0); }
+}
+
+.pt-overlay.pt-covering.pt-forward .pt-overlay-mark {
+  animation: pt-mark-cover-forward 520ms cubic-bezier(0.16, 1, 0.3, 1) 140ms forwards;
+}
+.pt-overlay.pt-revealing.pt-forward .pt-overlay-mark {
+  animation: pt-mark-reveal-forward 460ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+.pt-overlay.pt-covering.pt-back .pt-overlay-mark {
+  animation: pt-mark-cover-back 520ms cubic-bezier(0.16, 1, 0.3, 1) 140ms forwards;
+}
+.pt-overlay.pt-revealing.pt-back .pt-overlay-mark {
+  animation: pt-mark-reveal-back 460ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+/* Shapes pop in with a slight overshoot as the curtain covers, and pop
+   back out as it clears — same beat for both directions. */
+@keyframes pt-shape-in {
+  0% { opacity: 0; transform: scale(0.4); }
+  70% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes pt-shape-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.25); }
+}
+
+.pt-overlay.pt-covering .pt-shape--blob {
+  animation: pt-shape-in 560ms cubic-bezier(0.34, 1.56, 0.64, 1) 40ms forwards;
+}
+.pt-overlay.pt-covering .pt-shape--ring {
+  animation: pt-shape-in 560ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms forwards;
+}
+.pt-overlay.pt-covering .pt-shape--dot {
+  animation: pt-shape-in 460ms cubic-bezier(0.34, 1.56, 0.64, 1) 260ms forwards;
+}
+.pt-overlay.pt-revealing .pt-shape--blob,
+.pt-overlay.pt-revealing .pt-shape--ring,
+.pt-overlay.pt-revealing .pt-shape--dot {
+  animation: pt-shape-out 380ms ease-in forwards;
+}
+
+/* ---------------------------------------------------------------------------
+ * Ambient background motion — slow, subtle drifting gradient blobs behind
+ * the landing page hero. Pure CSS, no canvas/WebGL needed. Deliberately
+ * low-opacity and glacially paced so it reads as atmosphere, not motion.
+ * ------------------------------------------------------------------------- */
+
+@keyframes ambient-drift-a {
+  0%, 100% { transform: translate(-6%, -4%) scale(1); }
+  50% { transform: translate(4%, 6%) scale(1.08); }
+}
+@keyframes ambient-drift-b {
+  0%, 100% { transform: translate(5%, 3%) scale(1.05); }
+  50% { transform: translate(-4%, -5%) scale(0.98); }
+}
+
+.ambient-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.ambient-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(72px);
+  opacity: 0.5;
+}
+.ambient-blob--a {
+  top: -10%;
+  left: 8%;
+  width: 42vw;
+  height: 42vw;
+  max-width: 520px;
+  max-height: 520px;
+  background: radial-gradient(circle, var(--accent-soft), transparent 70%);
+  animation: ambient-drift-a 26s ease-in-out infinite;
+}
+.ambient-blob--b {
+  top: 6%;
+  right: 4%;
+  width: 34vw;
+  height: 34vw;
+  max-width: 420px;
+  max-height: 420px;
+  background: radial-gradient(circle, var(--border), transparent 70%);
+  animation: ambient-drift-b 32s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-blob--a,
+  .ambient-blob--b {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Microinteractions
+ * ------------------------------------------------------------------------- */
+
+/* Animated underline for text nav links. */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -3px;
+  height: 1.5px;
+  background: currentColor;
+  transition: right 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after {
+  right: 0;
 }

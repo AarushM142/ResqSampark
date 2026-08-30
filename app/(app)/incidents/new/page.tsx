@@ -4,8 +4,8 @@
 // Phase 4: wired through apiOrQueue() so create works offline too.
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { TransitionLink } from "@/app/components/TransitionLink";
+import { usePageTransition } from "@/lib/PageTransitionContext";
 import { getDeviceId } from "@/lib/deviceId";
 import { useConnectivity } from "@/lib/useConnectivity";
 import { apiOrQueue } from "@/lib/apiOrQueue";
@@ -33,7 +33,7 @@ function autoSeverity(count: number): "LOW" | "MODERATE" | "CRITICAL" {
 }
 
 export default function NewIncidentPage() {
-  const router = useRouter();
+  const navigate = usePageTransition();
   const { isOffline } = useConnectivity();
 
   const [type, setType] = useState("FLOOD");
@@ -87,11 +87,11 @@ export default function NewIncidentPage() {
       });
 
       if (result.mode === "api" && result.data) {
-        router.push(`/incidents/${result.data.id}`);
+        navigate(`/incidents/${result.data.id}`, "forward");
       } else {
         // Queued offline — optimistic: go back to the list
         // (the incident will appear once synced)
-        router.push("/incidents");
+        navigate("/incidents", "back");
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
@@ -103,18 +103,19 @@ export default function NewIncidentPage() {
     <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
       {/* Header */}
       <div>
-        <Link
+        <TransitionLink
           href="/incidents"
+          direction="back"
           className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
         >
           ← Back to incidents
-        </Link>
-        <h1 className="text-2xl font-bold mt-2 text-gray-100">
+        </TransitionLink>
+        <h1 className="text-2xl font-semibold mt-2 text-gray-100">
           Report Incident
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-gray-800 bg-[var(--bg)] p-5">
         {/* Incident type */}
         <div className="space-y-1.5">
           <label htmlFor="incident-type" className="text-sm font-medium text-gray-300">
@@ -254,16 +255,17 @@ export default function NewIncidentPage() {
             type="submit"
             id="submit-incident-btn"
             disabled={submitting}
-            className="flex-1 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-semibold px-4 py-2.5 text-sm transition-colors"
+            className="flex-1 rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white font-semibold px-4 py-2.5 text-sm transition-opacity"
           >
             {submitting ? "Reporting…" : "Report Incident"}
           </button>
-          <Link
+          <TransitionLink
             href="/incidents"
-            className="rounded-lg border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200 font-medium px-4 py-2.5 text-sm transition-colors"
+            direction="back"
+            className="rounded-full border border-gray-700 hover:border-gray-500 text-gray-400 hover:text-gray-200 font-medium px-4 py-2.5 text-sm transition-colors"
           >
             Cancel
-          </Link>
+          </TransitionLink>
         </div>
       </form>
     </div>

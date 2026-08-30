@@ -6,35 +6,22 @@ import { supabase } from "@/lib/supabaseClient";
 // Read helpers
 // ---------------------------------------------------------------------------
 
-export async function getIncidents(): Promise<Incident[]> {
-  const { data: incs, error } = await supabase.from('incidents').select('id');
-  if (error || !incs) {
-    console.error("Error fetching incidents", error);
-    return [];
-  }
-  
-  const incidents = await Promise.all(incs.map(inc => getIncident(inc.id)));
-  return incidents.filter((i): i is Incident => i !== undefined);
-}
+// Single embedded query — fetches an incident with all related rows (team
+// members, resource requests, activity log, tasks + subtasks, chat) in one
+// round trip via PostgREST's foreign-table embedding, instead of 1 + 5*N
+// separate queries. That N+1 pattern was slow enough (600ms-1.2s per list
+// load, worse as data grows) to intermittently time out / connection-reset,
+// which made the incident list silently fall back to a stale local cache.
+const INCIDENT_SELECT = `
+  *,
+  incident_team_members(device_id),
+  resource_requests(*),
+  activity_logs(*),
+  tasks(*, task_assignees(device_id), subtasks(*)),
+  chat_messages(*)
+`;
 
-export async function getIncident(id: string): Promise<Incident | undefined> {
-  const { data: inc, error } = await supabase.from('incidents').select('*').eq('id', id).single();
-  if (error || !inc) return undefined;
-
-  const [
-    { data: members },
-    { data: reqs },
-    { data: logs },
-    { data: tasks },
-    { data: chatMessages }
-  ] = await Promise.all([
-    supabase.from('incident_team_members').select('device_id').eq('incident_id', id),
-    supabase.from('resource_requests').select('*').eq('incident_id', id),
-    supabase.from('activity_logs').select('*').eq('incident_id', id).order('timestamp', { ascending: true }),
-    supabase.from('tasks').select('*, task_assignees(device_id), subtasks(*)').eq('incident_id', id),
-    supabase.from('chat_messages').select('*').eq('incident_id', id).order('client_timestamp', { ascending: true })
-  ]);
-
+function mapIncidentRow(inc: any): Incident {
   return {
     id: inc.id,
     type: inc.type,
@@ -48,8 +35,8 @@ export async function getIncident(id: string): Promise<Incident | undefined> {
     deleted: inc.deleted,
     created_at: inc.created_at,
     last_updated: inc.updated_at,
-    team_members: (members || []).map(m => m.device_id),
-    resource_requests: (reqs || []).map(r => ({
+    team_members: (inc.incident_team_members || []).map((m: any) => m.device_id),
+    resource_requests: (inc.resource_requests || []).map((r: any) => ({
       id: r.id,
       incident_id: r.incident_id,
       priority: r.priority,
@@ -57,12 +44,14 @@ export async function getIncident(id: string): Promise<Incident | undefined> {
       items: r.items,
       created_at: r.created_at
     })),
-    activity_log: (logs || []).map(l => ({
-      timestamp: l.timestamp,
-      device_id: l.device_id,
-      action: l.action
-    })),
-    tasks: (tasks || []).map((t: any) => ({
+    activity_log: (inc.activity_logs || [])
+      .map((l: any) => ({
+        timestamp: l.timestamp,
+        device_id: l.device_id,
+        action: l.action
+      }))
+      .sort((a: ActivityLogEntry, b: ActivityLogEntry) => a.timestamp - b.timestamp),
+    tasks: (inc.tasks || []).map((t: any) => ({
       id: t.id,
       incidentId: t.incident_id,
       title: t.title,
@@ -84,17 +73,34 @@ export async function getIncident(id: string): Promise<Incident | undefined> {
         createdAt: s.created_at
       }))
     })),
-    chatMessages: (chatMessages || []).map(m => ({
-      id: m.id,
-      incidentId: m.incident_id,
-      authorId: m.author_id,
-      authorName: m.author_name,
-      body: m.body,
-      clientTimestamp: m.client_timestamp,
-      syncedAt: m.synced_at
-    })),
+    chatMessages: (inc.chat_messages || [])
+      .map((m: any) => ({
+        id: m.id,
+        incidentId: m.incident_id,
+        authorId: m.author_id,
+        authorName: m.author_name,
+        body: m.body,
+        clientTimestamp: m.client_timestamp,
+        syncedAt: m.synced_at
+      }))
+      .sort((a: ChatMessage, b: ChatMessage) => a.clientTimestamp - b.clientTimestamp),
     related_incident_ids: inc.related_incident_ids || []
   } as Incident;
+}
+
+export async function getIncidents(): Promise<Incident[]> {
+  const { data, error } = await supabase.from('incidents').select(INCIDENT_SELECT);
+  if (error || !data) {
+    console.error("Error fetching incidents", error);
+    return [];
+  }
+  return data.map(mapIncidentRow);
+}
+
+export async function getIncident(id: string): Promise<Incident | undefined> {
+  const { data, error } = await supabase.from('incidents').select(INCIDENT_SELECT).eq('id', id).single();
+  if (error || !data) return undefined;
+  return mapIncidentRow(data);
 }
 
 // ---------------------------------------------------------------------------
