@@ -12,7 +12,7 @@ import { usePageTransition } from "@/lib/PageTransitionContext";
 import type { Incident } from "@/types";
 import { SeverityBadge, StatusBadge } from "@/app/components/StatusBadge";
 import { ActivityLog } from "@/app/components/ActivityLog";
-import { ResourceRequestForm } from "@/app/components/ResourceRequestForm";
+import { ResourcesTab } from "@/app/components/ResourcesTab";
 import { getDeviceId } from "@/lib/deviceId";
 import { useConnectivity } from "@/lib/useConnectivity";
 import { apiOrQueue } from "@/lib/apiOrQueue";
@@ -176,9 +176,9 @@ function EditForm({
             }
             className="w-full rounded-lg border border-gray-700 bg-gray-900 text-gray-100 px-2 py-1.5 text-sm"
           >
-            <option value="LOW">🟡 LOW</option>
-            <option value="MODERATE">🟠 MODERATE</option>
-            <option value="CRITICAL">🔴 CRITICAL</option>
+            <option value="LOW">LOW</option>
+            <option value="MODERATE">MODERATE</option>
+            <option value="CRITICAL">CRITICAL</option>
           </select>
         </div>
       </div>
@@ -202,7 +202,7 @@ function EditForm({
           id="save-edit-btn"
           onClick={handleSave}
           disabled={submitting}
-          className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 transition-opacity"
+          className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-sm font-semibold px-4 py-2 transition-opacity"
         >
           {submitting ? "Saving…" : "Save Changes"}
         </button>
@@ -221,13 +221,7 @@ function EditForm({
 // Main detail page
 // ---------------------------------------------------------------------------
 
-const TYPE_EMOJI: Record<string, string> = {
-  FLOOD: "🌊",
-  FIRE: "🔥",
-  EARTHQUAKE: "🌍",
-  LANDSLIDE: "⛰️",
-  OTHER: "⚠️",
-};
+
 
 export default function IncidentDetailPage({
   params,
@@ -235,7 +229,7 @@ export default function IncidentDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const navigate = usePageTransition();
-  const { isOffline } = useConnectivity();
+  const { isOffline, manualOffline } = useConnectivity();
   const [id, setId] = useState<string | null>(null);
   const [incident, setIncident] = useState<Incident | null>(null);
   const [loading, setLoading] = useState(true);
@@ -291,6 +285,7 @@ export default function IncidentDetailPage({
       const data: Incident = await res.json();
       setIncident(data);
       setError(null);
+      setTeamActionError(null);
     } catch (e) {
       setIncident((prev) => {
         if (!prev) {
@@ -319,6 +314,8 @@ export default function IncidentDetailPage({
       .on('postgres_changes', { event: '*', schema: 'public', table: 'subtasks' }, () => fetchIncident())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'resource_requests', filter: `incident_id=eq.${id}` }, () => fetchIncident())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'incident_team_members', filter: `incident_id=eq.${id}` }, () => fetchIncident())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_logs', filter: `incident_id=eq.${id}` }, () => fetchIncident())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'task_assignees' }, () => fetchIncident())
       .subscribe();
 
     return () => {
@@ -374,12 +371,11 @@ export default function IncidentDetailPage({
       if (result.mode === "api" && result.data) {
         setIncident(result.data);
       } else {
-        // Queued offline — optimistic UI: reflect the action locally
-        // Assumption: safe to show a brief toast; we don't attempt to locally simulate
-        // server-side state transitions since that's the server's job.
-        setTeamActionError(
-          `ℹ️ Action queued — will apply on next sync (${isOffline ? "offline" : "network issue"})`
-        );
+        // Queued — only happens on a genuine network failure (server errors now throw).
+        const reason = manualOffline
+          ? "Offline Mode is ON — disable it in the top bar to apply changes live"
+          : "Network unavailable — action queued for next sync";
+        setTeamActionError(`ℹ️ ${reason}`);
       }
     } catch (e) {
       setTeamActionError(e instanceof Error ? e.message : "Unknown error");
@@ -410,11 +406,10 @@ export default function IncidentDetailPage({
     );
   }
 
-  const emoji = TYPE_EMOJI[incident.type] ?? "⚠️";
   const needed = incident.team_size_needed - incident.team_members.length;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className={`mx-auto px-4 py-6 space-y-6 transition-[max-width] duration-300 ${activeTab === "COORDINATION" ? "max-w-5xl" : "max-w-2xl"}`}>
       {/* Back link */}
       <TransitionLink
         href="/incidents"
@@ -426,17 +421,10 @@ export default function IncidentDetailPage({
 
       {/* Incident header */}
       <div className="space-y-3">
-        <div
-          className={`rounded-2xl border bg-gray-900/60 overflow-hidden ${
-            incident.severity === "CRITICAL" ? "border-[var(--accent)]/30" : "border-gray-800"
-          }`}
-        >
-          {incident.severity === "CRITICAL" && <div className="h-1 hazard-stripe" />}
+        <div className="rounded-lg bg-[var(--bg-soft)] overflow-hidden">
+          {/* Removed hazard-stripe */}
           <div className="flex items-start justify-between gap-3 flex-wrap p-4">
             <div className="flex items-center gap-3">
-              <span className="text-2xl w-12 h-12 rounded-2xl bg-gray-800/80 border border-gray-700/60 flex items-center justify-center shrink-0">
-                {emoji}
-              </span>
               <div>
                 <h1 className="text-xl font-bold text-gray-100 leading-tight">
                   {incident.type} — {incident.location}
@@ -456,20 +444,20 @@ export default function IncidentDetailPage({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex gap-1 rounded-full border border-gray-800 bg-gray-900 p-1 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-6 border-b border-gray-800 overflow-x-auto scrollbar-hide mb-6">
         {(["OVERVIEW", "TEAM", "RESOURCES", "COORDINATION", "ACTIVITY"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`relative px-4 py-2 rounded-full text-[13px] font-medium whitespace-nowrap transition-all cursor-pointer ${
+            className={`relative pb-3 text-[13px] font-medium whitespace-nowrap transition-colors cursor-pointer border-b-2 -mb-[1px] ${
               activeTab === tab
-                ? "bg-[var(--ink)] text-white"
-                : "text-gray-500 hover:text-gray-200"
+                ? "border-gray-100 text-gray-100"
+                : "border-transparent text-gray-500 hover:text-gray-300"
             }`}
           >
             {tab.charAt(0) + tab.slice(1).toLowerCase().replace("_", " ")}
             {tab === "COORDINATION" && hasUnreadCoordination && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--accent)] ring-2 ring-[var(--bg)]"></span>
+              <span className="absolute top-0.5 -right-2.5 w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></span>
             )}
           </button>
         ))}
@@ -488,7 +476,7 @@ export default function IncidentDetailPage({
                   <button
                     disabled={teamActionPending}
                     onClick={() => performTeamAction({ action_type: "CLAIM" })}
-                    className="bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-xs font-semibold px-4 py-2 rounded-full transition-opacity"
+                    className="bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-xs font-semibold px-4 py-2 rounded-full transition-opacity"
                   >
                     Claim Incident
                   </button>
@@ -504,7 +492,7 @@ export default function IncidentDetailPage({
                   <button
                     disabled={teamActionPending}
                     onClick={() => performTeamAction({ action_type: "STATUS_UPDATE", new_status: "RESOLVED" })}
-                    className="bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity"
+                    className="bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity"
                   >
                     Yes, Resolve
                   </button>
@@ -519,17 +507,17 @@ export default function IncidentDetailPage({
             )}
 
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="rounded-2xl bg-gray-900 border border-gray-800 p-3 space-y-0.5 hover:border-gray-700 transition-colors">
+              <div className="rounded-lg bg-[var(--bg-soft)] p-3 space-y-0.5">
                 <p className="text-gray-500 text-xs">Location</p>
                 <p className="text-gray-200 font-medium">{incident.location}</p>
               </div>
-              <div className="rounded-2xl bg-gray-900 border border-gray-800 p-3 space-y-0.5 hover:border-gray-700 transition-colors">
+              <div className="rounded-lg bg-[var(--bg-soft)] p-3 space-y-0.5">
                 <p className="text-gray-500 text-xs">Affected</p>
                 <p className="text-gray-200 font-medium">{incident.affected_count.toLocaleString("en-IN")} people</p>
               </div>
             </div>
 
-            <div className="rounded-2xl bg-gray-900 border border-gray-800 p-3">
+            <div className="rounded-lg bg-[var(--bg-soft)] p-3">
               <p className="text-gray-500 text-xs mb-1">Description</p>
               <p className="text-gray-200 text-sm leading-relaxed">{incident.description}</p>
             </div>
@@ -562,21 +550,21 @@ export default function IncidentDetailPage({
 
             {/* Edit / Delete actions */}
             {!incident.deleted && incident.status !== "RESOLVED" && !editing && (
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap pt-2">
                 <button
                   id="edit-incident-btn"
                   onClick={() => setEditing(true)}
-                  className="rounded-full border border-gray-700 hover:border-[var(--ink)] text-gray-300 hover:text-gray-100 text-sm px-3.5 py-1.5 transition-colors"
+                  className="rounded-md bg-gray-900 hover:bg-gray-800 text-gray-300 hover:text-white text-xs font-semibold px-4 py-2 transition-colors"
                 >
-                  Edit
+                  Edit details
                 </button>
                 {!deleteConfirm ? (
                   <button
                     id="delete-incident-btn"
                     onClick={() => setDeleteConfirm(true)}
-                    className="rounded-full border border-[var(--accent)]/40 hover:border-[var(--accent)] hover:bg-red-950 text-red-400 hover:text-red-300 text-sm px-3.5 py-1.5 transition-colors"
+                    className="rounded-md bg-transparent border border-red-900/30 hover:bg-red-950/40 text-red-400 hover:text-red-300 text-xs font-semibold px-4 py-2 transition-colors"
                   >
-                    Delete
+                    Delete incident
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 rounded-lg border border-red-800 bg-red-950/20 px-3 py-1.5">
@@ -652,7 +640,7 @@ export default function IncidentDetailPage({
                   id="claim-btn"
                   disabled={teamActionPending}
                   onClick={() => performTeamAction({ action_type: "CLAIM" })}
-                  className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-sm font-semibold px-3.5 py-1.5 transition-opacity"
+                  className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-sm font-semibold px-3.5 py-1.5 transition-opacity"
                 >
                   Claim Incident
                 </button>
@@ -664,7 +652,7 @@ export default function IncidentDetailPage({
                   id="join-team-btn"
                   disabled={teamActionPending}
                   onClick={() => performTeamAction({ action_type: "JOIN_TEAM" })}
-                  className="rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-white disabled:opacity-50 text-sm font-semibold px-3.5 py-1.5 transition-colors"
+                  className="rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] disabled:opacity-50 text-sm font-semibold px-3.5 py-1.5 transition-colors"
                 >
                   Join Team
                 </button>
@@ -688,7 +676,7 @@ export default function IncidentDetailPage({
                   onClick={() =>
                     performTeamAction({ action_type: "STATUS_UPDATE", new_status: "IN_PROGRESS" })
                   }
-                  className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-sm font-semibold px-3.5 py-1.5 transition-opacity"
+                  className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-sm font-semibold px-3.5 py-1.5 transition-opacity"
                 >
                   Start Work
                 </button>
@@ -701,7 +689,7 @@ export default function IncidentDetailPage({
                   onClick={() =>
                     performTeamAction({ action_type: "STATUS_UPDATE", new_status: "RESOLVED" })
                   }
-                  className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-sm font-semibold px-3.5 py-1.5 transition-opacity"
+                  className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-sm font-semibold px-3.5 py-1.5 transition-opacity"
                 >
                   Mark Resolved
                 </button>
@@ -719,120 +707,11 @@ export default function IncidentDetailPage({
 
         {/* RESOURCES TAB */}
         {activeTab === "RESOURCES" && (
-          <section className="rounded-2xl border border-gray-800 bg-gray-900 p-4 space-y-3 animate-fade-in-up">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-200">Resource Requests</h2>
-              {incident.status !== "RESOLVED" && !incident.deleted && (
-                <button
-                  id="toggle-resource-form-btn"
-                  onClick={() => setShowResourceForm((v) => !v)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-gray-700 hover:border-[var(--ink)] text-gray-400 hover:text-gray-200 transition-colors"
-                >
-                  {showResourceForm ? "Cancel" : "+ Request Resources"}
-                </button>
-              )}
-            </div>
-
-            {showResourceForm && (
-              <ResourceRequestForm
-                incidentId={incident.id}
-                onCreated={() => {
-                  setShowResourceForm(false);
-                  // Re-fetch to get updated incident with new resource request
-                  if (!id) return;
-                  fetch(`/api/incidents/${id}`)
-                    .then((r) => r.json())
-                    .then((data: Incident) => setIncident(data));
-                }}
-              />
-            )}
-
-            {incident.resource_requests.length === 0 ? (
-              <p className="text-sm text-gray-600 italic">No resource requests yet.</p>
-            ) : (
-              <div className="space-y-2">
-                {incident.resource_requests.map((req) => (
-                  <div
-                    key={req.id}
-                    className={`rounded-2xl border bg-gray-950/40 p-3 text-sm space-y-2 overflow-hidden ${
-                      req.priority === "CRITICAL" ? "border-[var(--accent)]/30" : "border-gray-700"
-                    }`}
-                  >
-                    {req.priority === "CRITICAL" && (
-                      <div className="h-1 -mx-3 -mt-3 mb-2 hazard-stripe" />
-                    )}
-                    <div className="flex justify-between items-center">
-                      <span className="text-[13px] font-medium text-gray-300">Priority: {req.priority}</span>
-                      <span
-                        className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
-                          req.status === "PENDING"
-                            ? "bg-yellow-900/40 text-yellow-300"
-                            : req.status === "ACCEPTED"
-                            ? "bg-blue-900/40 text-blue-300"
-                            : req.status === "DELIVERED"
-                            ? "bg-green-900/40 text-green-300"
-                            : "bg-gray-800 text-gray-500"
-                        }`}
-                      >
-                        {req.status}
-                      </span>
-                    </div>
-                    <div className="text-gray-400 text-xs font-mono">
-                      {Object.entries(req.items)
-                        .filter(([, v]) => v)
-                        .map(([k, v]) => (typeof v === "boolean" ? k : `${k}: ${v}`))
-                        .join(" · ")}
-                    </div>
-                    {/* Status advance buttons (forward only, not CANCELLED) */}
-    {req.status !== "DELIVERED" && req.status !== "CANCELLED" && (
-                      <div className="flex gap-2">
-                        {req.status === "PENDING" && (
-                          <button
-                            id={`accept-resource-${req.id.slice(0, 8)}`}
-                            onClick={async () => {
-                              const device_id = getDeviceId();
-                              const res = await fetch(
-                                `/api/incidents/${incident.id}/resources/${req.id}`,
-                                {
-                                  method: "PATCH",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ new_status: "ACCEPTED", device_id }),
-                                }
-                              );
-                              if (res.ok) setIncident(await res.json());
-                            }}
-                            className="text-xs px-2.5 py-1 rounded-full bg-[var(--ink)] hover:opacity-85 text-white transition-opacity font-medium"
-                          >
-                            Accept
-                          </button>
-                        )}
-                        {req.status === "ACCEPTED" && (
-                          <button
-                            id={`deliver-resource-${req.id.slice(0, 8)}`}
-                            onClick={async () => {
-                              const device_id = getDeviceId();
-                              const res = await fetch(
-                                `/api/incidents/${incident.id}/resources/${req.id}`,
-                                {
-                                  method: "PATCH",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ new_status: "DELIVERED", device_id }),
-                                }
-                              );
-                              if (res.ok) setIncident(await res.json());
-                            }}
-                            className="text-xs px-2.5 py-1 rounded-full bg-[var(--ink)] hover:opacity-85 text-white transition-opacity font-medium"
-                          >
-                            Mark Delivered
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
+          <ResourcesTab 
+            incident={incident} 
+            setIncident={setIncident} 
+            myDeviceId={myDeviceId} 
+          />
         )}
 
         {/* COORDINATION TAB (Tasks & Chat) */}
@@ -843,6 +722,9 @@ export default function IncidentDetailPage({
              chatMessages={incident.chatMessages || []}
              isTeamMember={myDeviceId ? incident.team_members.includes(myDeviceId) : false}
              isTeamLeader={myDeviceId ? incident.team_leader === myDeviceId : false}
+             teamMembers={incident.team_members}
+             teamLeader={incident.team_leader}
+             teamSizeNeeded={incident.team_size_needed}
           />
         )}
 

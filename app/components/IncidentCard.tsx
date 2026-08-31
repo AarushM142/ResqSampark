@@ -11,18 +11,9 @@ import { useConnectivity } from "@/lib/useConnectivity";
 import { apiOrQueue } from "@/lib/apiOrQueue";
 import { useState } from "react";
 
-const TYPE_EMOJI: Record<string, string> = {
-  FLOOD: "🌊",
-  FIRE: "🔥",
-  EARTHQUAKE: "🌍",
-  LANDSLIDE: "⛰️",
-  OTHER: "⚠️",
-};
-
 export function IncidentCard({ incident, onRefresh }: { incident: Incident, onRefresh?: () => void }) {
   const { isOffline } = useConnectivity();
   const [claiming, setClaiming] = useState(false);
-  const emoji = TYPE_EMOJI[incident.type] ?? "⚠️";
   const needed = incident.team_size_needed - incident.team_members.length;
 
   async function handleClaim(e: React.MouseEvent) {
@@ -54,14 +45,11 @@ export function IncidentCard({ incident, onRefresh }: { incident: Incident, onRe
         isCritical ? "border-[var(--accent)]/30" : "border-gray-800"
       }`}
     >
-      {isCritical && <div className="absolute top-0 left-0 right-0 h-[3px] hazard-stripe" />}
+      {/* Removed hazard-stripe */}
 
       {/* Header row */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="text-xl shrink-0 w-10 h-10 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-3">
-            {emoji}
-          </span>
           <div className="min-w-0">
             <p className="font-semibold text-gray-100 truncate">
               {incident.type} — {incident.location}
@@ -84,7 +72,7 @@ export function IncidentCard({ incident, onRefresh }: { incident: Incident, onRe
             <button
               disabled={claiming}
               onClick={handleClaim}
-              className="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-white transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-default"
+              className="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-default"
             >
               {claiming ? "Claiming…" : "Claim"}
             </button>

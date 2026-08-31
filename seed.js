@@ -82,6 +82,44 @@ async function seed() {
     { id: 'log-3', incident_id: 'demo-003', device_id: 'demo-device-2', action: 'Reported by Worker demo-device-2', timestamp: T3 }
   ]);
 
+  console.log("Seeding demo tasks...");
+  const tasks = [
+    {
+      id: 'task-1',
+      incident_id: 'demo-001',
+      title: 'Evacuate trapped residents in Sector 4',
+      description: 'Water levels rising rapidly. Priority rescue needed.',
+      status: 'TODO',
+      members_required: 3,
+      created_by: 'system',
+      status_changed_by: 'system',
+      status_changed_at: T1,
+      created_at: T1,
+    },
+    {
+      id: 'task-2',
+      incident_id: 'demo-001',
+      title: 'Setup Emergency Distribution Point',
+      description: 'Find high ground to distribute rations and water.',
+      status: 'TODO',
+      members_required: 2,
+      created_by: 'system',
+      status_changed_by: 'system',
+      status_changed_at: T1,
+      created_at: T1,
+    }
+  ];
+  await supabase.from('tasks').insert(tasks);
+
+  console.log("Seeding demo subtasks...");
+  const subtasks = [
+    { id: 'sub-1', task_id: 'task-1', label: 'Bring 10 life jackets', checked: false, created_by: 'system', created_at: T1 },
+    { id: 'sub-2', task_id: 'task-1', label: 'Deploy inflatable raft', checked: false, created_by: 'system', created_at: T1 },
+    { id: 'sub-3', task_id: 'task-2', label: 'Load 500L water', checked: false, created_by: 'system', created_at: T1 },
+    { id: 'sub-4', task_id: 'task-2', label: 'Secure perimeter tape', checked: false, created_by: 'system', created_at: T1 }
+  ];
+  await supabase.from('subtasks').insert(subtasks);
+
   console.log("Database seeded successfully!");
 }
 

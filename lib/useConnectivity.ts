@@ -48,14 +48,32 @@ export function useConnectivity(): ConnectivityState {
     const handleOnline = () => setBrowserOnline(true);
     const handleOffline = () => setBrowserOnline(false);
 
+    // Sync manualOffline across all hook instances in the same tab.
+    // When SyncBar's instance writes to localStorage, the page's instance
+    // picks it up here instead of staying stale on its initial mount value.
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === MANUAL_OVERRIDE_KEY) {
+        setManualOfflineState(e.newValue === "true");
+      }
+    };
+    // Same-tab sync: the native 'storage' event only fires in OTHER tabs.
+    // This custom event is dispatched by setManualOffline() in this same file.
+    const handleManualOfflineChange = (e: Event) => {
+      setManualOfflineState((e as CustomEvent<boolean>).detail);
+    };
+
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("manualOfflineChange", handleManualOfflineChange);
 
     const poll = setInterval(updateStatus, 1000);
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("manualOfflineChange", handleManualOfflineChange);
       clearInterval(poll);
     };
   }, []);
@@ -64,6 +82,9 @@ export function useConnectivity(): ConnectivityState {
     setManualOfflineState(value);
     if (typeof window !== "undefined") {
       window.localStorage.setItem(MANUAL_OVERRIDE_KEY, String(value));
+      // Dispatch a custom event so same-tab instances of this hook update immediately.
+      // The native 'storage' event only fires in OTHER tabs, not the one that wrote it.
+      window.dispatchEvent(new CustomEvent("manualOfflineChange", { detail: value }));
     }
   }, []);
 

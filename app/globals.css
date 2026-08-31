@@ -1,132 +1,44 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
- * SahayLink / ResQSampark — light editorial theme
- * Palette taken from the approved "ResQSampark Official Redesign" canvas:
- * warm white ground, near-black ink, a single red-orange accent for
- * critical/urgent state, and muted amber/blue/green for the other semantic
- * states. No dark "ops console" chrome — clean, calm, high-contrast.
+ * ResQSampark — Dark Mode First Theme
  * ------------------------------------------------------------------------- */
 
 :root {
-  --ink: oklch(15% 0.005 258);
-  --body-text: oklch(35% 0.006 258);
-  --muted: oklch(55% 0.006 258);
-  --faint: oklch(72% 0.004 258);
-  --bg: oklch(100% 0 0);
-  --bg-soft: oklch(98% 0.002 258);
-  --border: oklch(90% 0.004 258);
-  --accent: oklch(52% 0.19 27);
-  --accent-soft: oklch(95% 0.03 27);
-  --amber-text: oklch(55% 0.13 75);
-  --blue-text: oklch(50% 0.13 250);
-  --green-text: oklch(48% 0.10 150);
+  --ink: #09090b;
+  --body-text: #52525b;
+  --muted: #a1a1aa;
+  --faint: #d4d4d8;
+  --bg: #ffffff; 
+  --bg-soft: #f4f4f5; 
+  --border: #e4e4e7; 
+  --accent: #000000; 
+  --accent-soft: rgba(0, 0, 0, 0.05);
+  --critical: #ef4444;
+  --amber-text: #d97706;
+  --blue-text: #2563eb;
+  --green-text: #059669;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--bg);
   --color-foreground: var(--ink);
   --font-mono: var(--font-mono, ui-monospace, "IBM Plex Mono", monospace);
+  
+  /* Inverted Zinc ramp for Light Mode trick */
+  --color-gray-50: #09090b;
+  --color-gray-100: #18181b;
+  --color-gray-200: #27272a;
+  --color-gray-300: #3f3f46;
+  --color-gray-400: #52525b;
+  --color-gray-500: #71717a;
+  --color-gray-600: #a1a1aa;
+  --color-gray-700: #d4d4d8;
+  --color-gray-800: #e4e4e7;
+  --color-gray-900: #f4f4f5;
+  --color-gray-950: #ffffff;
 }
 
-/*
- * The rest of the app was authored against Tailwind's default gray/red/
- * orange/amber/yellow/blue/green ramps using the DARK-theme convention
- * (e.g. bg-red-900 = tinted dark surface, text-red-300 = bright readable
- * text, border-red-700 = visible border against a near-black page).
- *
- * Rather than re-touch every className, we reverse the lightness ordering
- * of each ramp so every existing class keeps the same ROLE (surface tint /
- * readable text / visible border) but now reads correctly on a white page:
- * low numbers become dark (ink-like), high numbers become light (paper-like).
- * Hue and chroma per family are unchanged, so "redness"/"blueness" etc. is
- * preserved — only the lightness axis flips.
- */
-@theme {
-  --color-gray-50: oklch(15% 0.006 258);
-  --color-gray-100: oklch(22% 0.006 258);
-  --color-gray-200: oklch(29% 0.006 258);
-  --color-gray-300: oklch(38% 0.006 258);
-  --color-gray-400: oklch(47% 0.005 258);
-  --color-gray-500: oklch(57% 0.005 258);
-  --color-gray-600: oklch(68% 0.005 258);
-  --color-gray-700: oklch(80% 0.004 258);
-  --color-gray-800: oklch(90% 0.004 258);
-  --color-gray-900: oklch(96% 0.003 258);
-  --color-gray-950: oklch(99% 0.002 258);
-
-  --color-red-50: oklch(22% 0.10 27);
-  --color-red-100: oklch(30% 0.13 27);
-  --color-red-200: oklch(38% 0.16 27);
-  --color-red-300: oklch(46% 0.18 27);
-  --color-red-400: oklch(52% 0.19 27);
-  --color-red-500: oklch(58% 0.18 27);
-  --color-red-600: oklch(66% 0.15 27);
-  --color-red-700: oklch(76% 0.11 27);
-  --color-red-800: oklch(87% 0.07 27);
-  --color-red-900: oklch(94% 0.04 27);
-  --color-red-950: oklch(98% 0.02 27);
-
-  --color-orange-50: oklch(24% 0.09 50);
-  --color-orange-100: oklch(32% 0.12 50);
-  --color-orange-200: oklch(40% 0.15 50);
-  --color-orange-300: oklch(48% 0.17 50);
-  --color-orange-400: oklch(55% 0.18 50);
-  --color-orange-500: oklch(62% 0.17 50);
-  --color-orange-600: oklch(70% 0.14 50);
-  --color-orange-700: oklch(80% 0.10 50);
-  --color-orange-800: oklch(89% 0.06 50);
-  --color-orange-900: oklch(95% 0.035 50);
-  --color-orange-950: oklch(98% 0.02 50);
-
-  --color-amber-50: oklch(24% 0.07 75);
-  --color-amber-100: oklch(32% 0.09 75);
-  --color-amber-200: oklch(40% 0.11 75);
-  --color-amber-300: oklch(48% 0.12 75);
-  --color-amber-400: oklch(55% 0.13 75);
-  --color-amber-500: oklch(62% 0.13 75);
-  --color-amber-600: oklch(72% 0.12 75);
-  --color-amber-700: oklch(82% 0.09 75);
-  --color-amber-800: oklch(90% 0.06 75);
-  --color-amber-900: oklch(95% 0.035 75);
-  --color-amber-950: oklch(98% 0.02 75);
-
-  --color-yellow-50: oklch(26% 0.06 95);
-  --color-yellow-100: oklch(34% 0.08 95);
-  --color-yellow-200: oklch(42% 0.10 95);
-  --color-yellow-300: oklch(50% 0.11 95);
-  --color-yellow-400: oklch(58% 0.12 95);
-  --color-yellow-500: oklch(66% 0.12 95);
-  --color-yellow-600: oklch(76% 0.10 95);
-  --color-yellow-700: oklch(85% 0.07 95);
-  --color-yellow-800: oklch(92% 0.045 95);
-  --color-yellow-900: oklch(96% 0.025 95);
-  --color-yellow-950: oklch(98.5% 0.012 95);
-
-  --color-blue-50: oklch(20% 0.09 250);
-  --color-blue-100: oklch(28% 0.11 250);
-  --color-blue-200: oklch(36% 0.12 250);
-  --color-blue-300: oklch(44% 0.125 250);
-  --color-blue-400: oklch(50% 0.13 250);
-  --color-blue-500: oklch(58% 0.12 250);
-  --color-blue-600: oklch(68% 0.10 250);
-  --color-blue-700: oklch(79% 0.07 250);
-  --color-blue-800: oklch(88% 0.045 250);
-  --color-blue-900: oklch(95% 0.025 250);
-  --color-blue-950: oklch(98% 0.012 250);
-
-  --color-green-50: oklch(18% 0.06 150);
-  --color-green-100: oklch(26% 0.08 150);
-  --color-green-200: oklch(34% 0.09 150);
-  --color-green-300: oklch(42% 0.095 150);
-  --color-green-400: oklch(48% 0.10 150);
-  --color-green-500: oklch(55% 0.10 150);
-  --color-green-600: oklch(65% 0.09 150);
-  --color-green-700: oklch(77% 0.07 150);
-  --color-green-800: oklch(87% 0.045 150);
-  --color-green-900: oklch(94% 0.025 150);
-  --color-green-950: oklch(98% 0.012 150);
-}
 
 * {
   scrollbar-color: var(--border) var(--bg-soft);

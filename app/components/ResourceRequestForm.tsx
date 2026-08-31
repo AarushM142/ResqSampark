@@ -39,33 +39,29 @@ function QuantityInput({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="console-label text-[11px] font-medium text-gray-400">{label}</label>
-      <div className="flex gap-1 flex-wrap">
-        {Object.entries(presets).map(([label, qty]) => (
-          <button
-            key={label}
-            type="button"
-            onClick={() => onChange(value === qty ? undefined : qty)}
-            className={`px-2.5 py-1 rounded-full text-[12px] font-medium border transition-all ${
-              value === qty
-                ? "bg-[var(--ink)] border-[var(--ink)] text-white scale-[1.03]"
-                : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200"
-            }`}
-          >
-            {label} ({qty})
-          </button>
-        ))}
+      <label className="text-[11px] font-semibold text-gray-500">{label}</label>
+      <div className="flex gap-2">
+        <select
+          onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+          value={value && Object.values(presets).includes(value) ? value : ""}
+          className="flex-1 min-w-0 rounded border border-gray-300 bg-[var(--bg-soft)] text-gray-600 px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--ink)]"
+        >
+          <option value="">Preset...</option>
+          {Object.entries(presets).map(([lbl, qty]) => (
+            <option key={lbl} value={qty}>
+              {lbl} ({qty})
+            </option>
+          ))}
+        </select>
+        <input
+          type="number"
+          min={0}
+          placeholder="Custom qty"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+          className="flex-1 min-w-0 rounded border border-gray-300 bg-[var(--bg-soft)] text-[var(--ink)] px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--ink)]"
+        />
       </div>
-      <input
-        type="number"
-        min={0}
-        placeholder="Custom quantity"
-        value={value ?? ""}
-        onChange={(e) =>
-          onChange(e.target.value === "" ? undefined : Number(e.target.value))
-        }
-        className="w-full rounded border border-gray-700 bg-gray-900 text-gray-100 px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
-      />
     </div>
   );
 }
@@ -148,21 +144,21 @@ export function ResourceRequestForm({
       {/* Quantity items */}
       <div className="space-y-3">
         <QuantityInput
-          label="💧 Water (bottles)"
+          label="Water (bottles)"
           field="water"
           value={items.water}
           presets={QUANTITY_PRESETS.water}
           onChange={(v) => updateItem("water", v)}
         />
         <QuantityInput
-          label="🍱 Food (meal packs)"
+          label="Food (meal packs)"
           field="food"
           value={items.food}
           presets={QUANTITY_PRESETS.food}
           onChange={(v) => updateItem("food", v)}
         />
         <QuantityInput
-          label="💊 Medicine (units)"
+          label="Medicine (units)"
           field="medicine"
           value={items.medicine}
           presets={QUANTITY_PRESETS.medicine}
@@ -176,18 +172,18 @@ export function ResourceRequestForm({
         <div className="flex gap-2 flex-wrap">
           {(
             [
-              { key: "medical_team", label: "🏥 Medical Team" },
-              { key: "shelter", label: "⛺ Shelter" },
-              { key: "transport", label: "🚌 Transport" },
+              { key: "medical_team", label: "Medical Team" },
+              { key: "shelter", label: "Shelter" },
+              { key: "transport", label: "Transport" },
             ] as { key: keyof ResourceItems; label: string }[]
           ).map(({ key, label }) => (
             <button
               key={key}
               type="button"
               onClick={() => updateItem(key, !items[key] as ResourceItems[typeof key])}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              className={`px-3 py-1 rounded text-[11px] font-medium border transition-colors ${
                 items[key]
-                  ? "bg-[var(--ink)] border-[var(--ink)] text-white"
+                  ? "bg-[var(--ink)] border-[var(--ink)] text-[var(--bg)]"
                   : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500"
               }`}
             >
@@ -200,20 +196,20 @@ export function ResourceRequestForm({
       {/* Priority */}
       <div className="space-y-1.5">
         <label className="console-label text-[11px] font-medium text-gray-400">Priority</label>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {(["LOW", "MODERATE", "CRITICAL"] as const).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPriority(p)}
-              className={`px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-colors ${
+              className={`px-3 py-1 rounded text-[11px] font-semibold border transition-colors ${
                 priority === p
                   ? p === "CRITICAL"
-                    ? "bg-red-400 border-red-400 text-white"
+                    ? "bg-red-50 border-red-200 text-red-600"
                     : p === "MODERATE"
-                    ? "bg-orange-400 border-orange-400 text-white"
-                    : "bg-yellow-400 border-yellow-400 text-white"
-                  : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500"
+                    ? "bg-orange-50 border-orange-200 text-orange-600"
+                    : "bg-yellow-50 border-yellow-200 text-yellow-600"
+                  : "bg-transparent border-gray-300 text-gray-500 hover:border-gray-400"
               }`}
             >
               {p}
@@ -229,7 +225,7 @@ export function ResourceRequestForm({
           type="submit"
           id="submit-resource-btn"
           disabled={submitting || !hasAnyItem}
-          className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 transition-opacity"
+          className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-sm font-semibold px-4 py-2 transition-opacity"
         >
           {submitting ? "Submitting…" : "Submit Request"}
         </button>

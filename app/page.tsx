@@ -75,9 +75,9 @@ export default function LandingPage() {
             ))}
           </nav>
           <TransitionLink
-            href="/incidents/new"
+            href="/incidents?report=true"
             direction="forward"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-white text-[13px] font-semibold px-4 py-2 transition-all"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-[var(--bg)] text-[13px] font-semibold px-4 py-2 transition-all"
           >
             Report Incident
           </TransitionLink>
@@ -105,9 +105,9 @@ export default function LandingPage() {
           </p>
           <div className="flex items-center justify-center gap-5 flex-wrap">
             <TransitionLink
-              href="/incidents/new"
+              href="/incidents?report=true"
               direction="forward"
-              className="inline-flex items-center rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-white text-[14.5px] font-semibold px-6 py-3 transition-all"
+              className="inline-flex items-center rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-[var(--bg)] text-[14.5px] font-semibold px-6 py-3 transition-all"
             >
               Report an Incident
             </TransitionLink>

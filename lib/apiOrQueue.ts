@@ -8,6 +8,13 @@
 import type { ActionType } from "../types";
 import { enqueueAction } from "./queue";
 
+export class ApiError extends Error {
+  constructor(public message: string) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 export interface ApiOrQueueResult<T = unknown> {
   /** "api" = applied immediately via the network. "queued" = stored for later sync. */
   mode: "api" | "queued";
@@ -61,29 +68,27 @@ export async function apiOrQueue<T = unknown>(
     clearTimeout(timeout);
 
     if (!res.ok) {
-      if (res.status >= 400 && res.status < 500) {
-        // 4xx errors are client errors (conflicts, validation) — they will never succeed if replayed.
-        // Throw so the UI can show the error immediately (e.g. "Already a team member").
-        let errMsg = `Error ${res.status}`;
-        try {
-          const errData = await res.json();
-          if (errData.error) errMsg = errData.error;
-        } catch {}
-        throw new Error(errMsg);
-      }
-      
-      // Server reachable but rejected the request as a genuine server condition (5xx)
-      // — fall back to queue rather than losing the action.
-      const queued = enqueueAction(action_type, incident_id, payload);
-      return { mode: "queued", queuedSeqNumber: queued.seq_number };
+      // Both 4xx and 5xx: read the error message and throw immediately.
+      // 4xx = client/validation error (e.g. "Already a team member", "Incident not found")
+      // 5xx = server error — surfacing it is more useful than silently queuing,
+      //       because a queued action will just fail again on replay.
+      let errMsg = `Server error ${res.status}`;
+      try {
+        const errData = await res.json();
+        if (errData.error) errMsg = errData.error;
+      } catch {}
+      throw new ApiError(errMsg);
     }
 
     const data = (await res.json()) as T;
     return { mode: "api", data };
-  } catch {
-    // Fetch threw: network dropped mid-request, DNS failure, timeout/abort, etc.
-    // This is the "navigator.onLine said true but the internet is actually down"
-    // case — catch it here rather than trusting the connectivity hook alone.
+  } catch (err) {
+    // If the error was explicitly thrown by our logic (like 4xx/5xx responses),
+    // propagate it so the UI sees the specific failure.
+    if (err instanceof ApiError) throw err;
+
+    // Otherwise, assume it's a genuine network failure (DNS, timeout, connection drop),
+    // so we queue the action instead.
     const queued = enqueueAction(action_type, incident_id, payload);
     return { mode: "queued", queuedSeqNumber: queued.seq_number };
   }

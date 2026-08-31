@@ -22,10 +22,10 @@ export function Nav() {
           </TransitionLink>
         </nav>
         <TransitionLink
-          href="/incidents/new"
+          href="/incidents?report=true"
           id="report-incident-btn"
           direction="forward"
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-white text-[13px] font-semibold px-4 py-2 transition-all"
+          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-[var(--bg)] text-[13px] font-semibold px-4 py-2 transition-all"
         >
           Report Incident
         </TransitionLink>

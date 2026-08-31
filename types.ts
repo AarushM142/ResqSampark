@@ -31,6 +31,7 @@ export interface Task {
   description?: string;
   status: "TODO" | "IN_PROGRESS" | "DONE";
   assigneeIds: string[];
+  members_required: number;
   subtasks: Subtask[];
   createdBy: string;
   createdAt: number;
@@ -80,6 +81,8 @@ export type ActionType =
   | "RESOURCE_REQUEST"
   | "RESOURCE_STATUS_UPDATE"
   | "CREATE_TASK"
+  | "EDIT_TASK"
+  | "DELETE_TASK"
   | "ASSIGN_TASK"
   | "UNASSIGN_TASK"
   | "SET_TASK_STATUS"

@@ -499,6 +499,7 @@ async function applyAction(action: QueuedAction): Promise<SyncActionResult> {
           description: p.description as string,
           status: "TODO",
           assigneeIds: [],
+          members_required: Number(p.members_required) || 1,
           subtasks: [],
           createdBy: device_id,
           createdAt: now,
@@ -510,6 +511,52 @@ async function applyAction(action: QueuedAction): Promise<SyncActionResult> {
       activity_log: [...inc.activity_log, log(`Task created (synced)`)],
     }));
     return { device_id, seq_number, status: "applied", message: `✓ Task created` };
+  }
+
+  // -------------------------------------------------------------------------
+  // EDIT_TASK
+  // -------------------------------------------------------------------------
+  if (action_type === "EDIT_TASK") {
+    if (!incident_id) return { device_id, seq_number, status: "error", message: "Missing incident_id" };
+    const incident = await getIncident(incident_id);
+    if (!incident || incident.deleted) return { device_id, seq_number, status: "rejected", message: "⚠ Incident not found" };
+
+    const p = payload as Record<string, unknown>;
+    const taskId = p.taskId as string;
+    const title = p.title as string;
+    const members_required = Number(p.members_required);
+
+    await updateIncident(incident_id, (inc) => ({
+      ...inc,
+      tasks: (inc.tasks || []).map(t => t.id === taskId ? {
+        ...t,
+        title: title || t.title,
+        members_required: members_required || t.members_required
+      } : t),
+      last_updated: now,
+      activity_log: [...inc.activity_log, log(`Task updated`)],
+    }));
+    return { device_id, seq_number, status: "applied", message: `✓ Task updated` };
+  }
+
+  // -------------------------------------------------------------------------
+  // DELETE_TASK
+  // -------------------------------------------------------------------------
+  if (action_type === "DELETE_TASK") {
+    if (!incident_id) return { device_id, seq_number, status: "error", message: "Missing incident_id" };
+    const incident = await getIncident(incident_id);
+    if (!incident || incident.deleted) return { device_id, seq_number, status: "rejected", message: "⚠ Incident not found" };
+
+    const p = payload as Record<string, unknown>;
+    const taskId = p.taskId as string;
+
+    await updateIncident(incident_id, (inc) => ({
+      ...inc,
+      tasks: (inc.tasks || []).filter(t => t.id !== taskId),
+      last_updated: now,
+      activity_log: [...inc.activity_log, log(`Task deleted`)],
+    }));
+    return { device_id, seq_number, status: "applied", message: `✓ Task deleted` };
   }
 
   // -------------------------------------------------------------------------

@@ -53,6 +53,21 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   const now = Date.now();
 
+  // Format items for nice display in the activity log
+  const itemsText = Object.entries(resource.items)
+    .filter(([_, v]) => v)
+    .map(([k, v]) => {
+      const name = k.replace("_", " ");
+      return typeof v === "boolean" ? name : `${v} ${name}`;
+    })
+    .join(", ");
+
+  const actionMsg = new_status === "ACCEPTED" 
+    ? `Request for ${itemsText} was accepted`
+    : new_status === "DELIVERED"
+    ? `${itemsText} was delivered`
+    : `Resource status changed to ${new_status} for ${itemsText}`;
+
   await updateResourceRequest(id, resourceId, (r) => ({
     ...r,
     status: new_status as ResourceStatus,
@@ -67,7 +82,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       {
         timestamp: now,
         device_id: device_id ?? "unknown",
-        action: `Resource request ${resourceId.slice(0, 8)}… status updated to ${new_status}`,
+        action: actionMsg,
       },
     ],
   }));

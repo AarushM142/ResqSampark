@@ -13,14 +13,9 @@ import { TransitionLink } from "@/app/components/TransitionLink";
 import type { Incident } from "@/types";
 import { apiOrQueue } from "@/lib/apiOrQueue";
 import { useConnectivity } from "@/lib/useConnectivity";
+import { generateUUID } from "@/lib/deviceId";
 
-const TYPE_EMOJI: Record<string, string> = {
-  FLOOD: "🌊",
-  FIRE: "🔥",
-  EARTHQUAKE: "🌍",
-  LANDSLIDE: "⛰️",
-  OTHER: "⚠️",
-};
+
 
 function MessageComposer({
   target,
@@ -48,7 +43,7 @@ function MessageComposer({
       action_type: "POST_CHAT_MESSAGE",
       incident_id: target.id,
       payload: {
-        messageId: crypto.randomUUID(),
+        messageId: generateUUID(),
         body: body.trim(),
         clientTimestamp: Date.now(),
         authorName: `Worker ${myDeviceId.slice(0, 4)} · ${fromIncident.type} team nearby`,
@@ -77,7 +72,7 @@ function MessageComposer({
       <button
         onClick={handleSend}
         disabled={sending || !body.trim()}
-        className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-white text-xs font-semibold px-3.5 py-1.5 transition-opacity shrink-0"
+        className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-xs font-semibold px-3.5 py-1.5 transition-opacity shrink-0"
       >
         {sending ? "Sending…" : "Send"}
       </button>
@@ -138,7 +133,7 @@ export function NearbyTeams({
             <div key={n.id} className="rounded-lg border border-gray-800 bg-[var(--bg)] p-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="text-base shrink-0">{TYPE_EMOJI[n.type] ?? "⚠️"}</span>
+                  <span className="text-xs shrink-0 font-bold bg-gray-900 px-2 py-0.5 rounded text-gray-300 border border-gray-700">{n.type.slice(0,2)}</span>
                   <div className="min-w-0">
                     <TransitionLink href={`/incidents/${n.id}`} direction="forward" className="text-sm font-medium text-gray-100 hover:underline truncate block">
                       {n.type} team
@@ -150,7 +145,7 @@ export function NearbyTeams({
                 </div>
                 <button
                   onClick={() => setOpenId(openId === n.id ? null : n.id)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-white transition-colors shrink-0"
+                  className="text-xs px-3 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] transition-colors shrink-0"
                 >
                   {openId === n.id ? "Cancel" : "Message"}
                 </button>

@@ -57,6 +57,7 @@ function mapIncidentRow(inc: any): Incident {
       title: t.title,
       description: t.description,
       status: t.status,
+      members_required: t.members_required || 1,
       createdBy: t.created_by,
       statusChangedBy: t.status_changed_by,
       statusChangedAt: t.status_changed_at,
@@ -161,6 +162,7 @@ async function saveIncidentToRelational(incident: Incident) {
   }
 
   // tasks
+  await supabase.from('tasks').delete().eq('incident_id', incident.id);
   if (incident.tasks && incident.tasks.length > 0) {
     await supabase.from('tasks').upsert(incident.tasks.map(t => ({
       id: t.id,
@@ -168,6 +170,7 @@ async function saveIncidentToRelational(incident: Incident) {
       title: t.title,
       description: t.description,
       status: t.status,
+      members_required: t.members_required || 1,
       created_by: t.createdBy,
       status_changed_by: t.statusChangedBy,
       status_changed_at: t.statusChangedAt,

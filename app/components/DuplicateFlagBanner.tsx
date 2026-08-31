@@ -39,10 +39,9 @@ export function DuplicateFlagBanner({ incidentId, relatedIds, onDismiss }: Props
 
   return (
     <div className="rounded-2xl border border-yellow-700 bg-yellow-950/30 overflow-hidden animate-fade-in-up shadow-lg shadow-black/10">
-      <div className="h-1 hazard-stripe" />
+      {/* Removed hazard-stripe */}
       <div className="p-4 space-y-3">
       <div className="flex items-start gap-2">
-        <span className="text-yellow-400 text-lg">⚠️</span>
         <div className="space-y-1">
           <p className="console-label text-sm font-semibold text-yellow-300">
             Possible Duplicate Incident

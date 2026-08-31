@@ -78,7 +78,7 @@ export function SyncBar() {
               id="sync-now-btn"
               onClick={handleSyncNow}
               disabled={isSyncing}
-              className="text-[13px] px-3 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-white disabled:opacity-50 font-medium transition-all cursor-pointer disabled:cursor-default"
+              className="text-[13px] px-3 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] disabled:opacity-50 font-medium transition-all cursor-pointer disabled:cursor-default"
             >
               <span className={isSyncing ? "inline-block animate-spin" : "inline-block"}>⟳</span>{" "}
               {isSyncing ? "Syncing…" : "Sync Now"}
@@ -111,13 +111,13 @@ export function SyncBar() {
                     r.status === "applied"
                       ? "text-green-400"
                       : r.status === "rejected"
-                      ? "text-amber-400"
+                      ? "text-gray-500"
                       : "text-red-400"
                   }
                 >
-                  {r.status === "applied" ? "[OK]" : r.status === "rejected" ? "[!!]" : "[XX]"}
+                  {r.status === "applied" ? "[OK]" : r.status === "rejected" ? "[~~]" : "[XX]"}
                 </span>
-                <span className="text-gray-400">{r.message}</span>
+                <span className={r.status === "rejected" ? "text-gray-500" : "text-gray-400"}>{r.message}</span>
               </div>
             ))}
           </div>

@@ -7,6 +7,7 @@ export const mockTasks: Task[] = [
     title: "Distribute water — Sector 2",
     description: "Ensure 500 bottles reach the temporary shelter.",
     status: "TODO",
+    members_required: 1,
     assigneeIds: ["user-1"],
     subtasks: [
       {
@@ -40,6 +41,7 @@ export const mockTasks: Task[] = [
     incidentId: "inc-1",
     title: "Setup Medical Tents",
     status: "IN_PROGRESS",
+    members_required: 2,
     assigneeIds: ["user-2", "user-3"],
     subtasks: [
       {

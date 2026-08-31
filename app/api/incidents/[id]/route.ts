@@ -251,7 +251,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   if (action_type === "CREATE_TASK") {
-    const { title, description, taskId } = body;
+    const { title, description, taskId, members_required } = body;
     const updated = await updateIncident(id, (inc) => ({
       ...inc,
       tasks: [
@@ -263,6 +263,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
           description,
           status: "TODO",
           assigneeIds: [],
+          members_required: members_required || 1,
           subtasks: [],
           createdBy: device_id,
           createdAt: now,
@@ -271,6 +272,30 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         }
       ],
       last_updated: now,
+    }));
+    return NextResponse.json(updated);
+  }
+
+  if (action_type === "EDIT_TASK") {
+    const { taskId, title, members_required } = body;
+    const updated = await updateIncident(id, (inc) => ({
+      ...inc,
+      tasks: (inc.tasks || []).map(t => t.id === taskId ? {
+        ...t,
+        title: title || t.title,
+        members_required: members_required || t.members_required
+      } : t),
+      last_updated: now
+    }));
+    return NextResponse.json(updated);
+  }
+
+  if (action_type === "DELETE_TASK") {
+    const { taskId } = body;
+    const updated = await updateIncident(id, (inc) => ({
+      ...inc,
+      tasks: (inc.tasks || []).filter(t => t.id !== taskId),
+      last_updated: now
     }));
     return NextResponse.json(updated);
   }
