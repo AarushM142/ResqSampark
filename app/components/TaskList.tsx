@@ -17,9 +17,9 @@ function TaskCard({ task, incidentId, isTeamMember }: { task: Task, incidentId: 
   const progressPercent = totalCount === 0 ? 0 : Math.round((checkedCount / totalCount) * 100);
 
   const statusColors = {
-    TODO: "bg-[var(--bg-soft)] text-gray-400 border border-gray-700",
-    IN_PROGRESS: "bg-blue-100 text-blue-700 border border-blue-200",
-    DONE: "bg-green-100 text-green-700 border border-green-200"
+    TODO: "bg-zinc-100 text-zinc-800 border border-zinc-300",
+    IN_PROGRESS: "bg-blue-50 text-blue-700 border border-blue-300",
+    DONE: "bg-emerald-50 text-emerald-800 border border-emerald-300"
   };
 
   async function handleSubtaskCheck(subtaskId: string, checked: boolean) {
@@ -111,55 +111,55 @@ function TaskCard({ task, incidentId, isTeamMember }: { task: Task, incidentId: 
 
   if (editing) {
     return (
-      <div className="border border-gray-700 bg-gray-800/50 rounded-2xl p-3 space-y-3 shadow-inner">
+      <div className="border-2 border-zinc-300 bg-zinc-50 rounded-2xl p-3.5 space-y-3 shadow-xs">
         <input 
           type="text" 
           value={editTitle} 
           onChange={e => setEditTitle(e.target.value)} 
-          className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500" 
+          className="w-full bg-white border border-zinc-300 rounded-lg px-2.5 py-1.5 text-sm text-zinc-950 font-semibold focus:outline-none focus:border-zinc-950" 
         />
         <div className="flex items-center gap-2">
-          <label className="text-xs text-gray-400">Members Req:</label>
+          <label className="text-xs text-zinc-700 font-bold">Members Req:</label>
           <input 
             type="number" min="1" value={editReq} onChange={e => setEditReq(Number(e.target.value) || 1)} 
-            className="w-16 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500" 
+            className="w-16 bg-white border border-zinc-300 rounded px-2 py-1 text-xs text-zinc-950 font-bold focus:outline-none focus:border-zinc-950 text-center" 
           />
         </div>
         
         {/* Add Subtask in Edit Mode */}
-        <div className="pt-2 border-t border-gray-700">
-          <label className="text-xs text-gray-400 mb-1.5 block">Add Subtask Checklist Item:</label>
+        <div className="pt-2 border-t border-zinc-200">
+          <label className="text-xs text-zinc-700 font-bold mb-1.5 block">Add Subtask Checklist Item:</label>
           <form onSubmit={handleAddSubtask} className="flex gap-2">
             <input 
               type="text" 
               value={newSubtask} 
               onChange={e => setNewSubtask(e.target.value)} 
               placeholder="e.g. Bring ladder" 
-              className="flex-1 min-w-0 bg-gray-900 border border-gray-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500" 
+              className="flex-1 min-w-0 bg-white border border-zinc-300 rounded-lg px-2.5 py-1.5 text-xs text-zinc-950 placeholder:text-zinc-400 font-medium focus:outline-none focus:border-zinc-950" 
             />
-            <button type="submit" disabled={!newSubtask.trim()} className="px-2.5 py-1 rounded text-[10px] uppercase font-semibold bg-gray-700 text-gray-300 hover:text-white hover:bg-gray-600 disabled:opacity-50">Add</button>
+            <button type="submit" disabled={!newSubtask.trim()} className="px-3 py-1.5 rounded-lg text-[10px] uppercase font-bold bg-zinc-950 text-white hover:bg-zinc-800 disabled:opacity-50 transition-colors">Add</button>
           </form>
         </div>
 
-        <div className="flex gap-2 justify-end pt-3">
-          <button onClick={() => setEditing(false)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white transition-colors">Cancel</button>
-          <button onClick={handleSaveEdit} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[var(--ink)] text-[var(--bg)] hover:opacity-85 transition-opacity">Save Task</button>
+        <div className="flex gap-2 justify-end pt-2">
+          <button onClick={() => setEditing(false)} className="px-3 py-1.5 rounded-full text-xs font-bold border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100 transition-colors">Cancel</button>
+          <button onClick={handleSaveEdit} className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-zinc-950 text-white hover:bg-zinc-800 shadow-xs transition-colors">Save Task</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`border border-gray-800 bg-[var(--bg)] rounded-2xl p-3 space-y-3 transition-colors ${task.status === "DONE" ? "opacity-60 hover:opacity-100" : "hover:border-gray-700"}`}>
+    <div className={`border border-zinc-200 hover:border-zinc-300 bg-white rounded-2xl p-3.5 space-y-3 shadow-2xs transition-all ${task.status === "DONE" ? "opacity-75" : ""}`}>
       <div className="flex justify-between items-start gap-2">
-        <h4 className={`font-medium text-[var(--ink)] text-sm leading-tight break-words flex-1 min-w-0 ${task.status === "DONE" ? "line-through text-gray-500" : ""}`}>{task.title}</h4>
+        <h4 className={`font-bold text-zinc-950 text-sm leading-tight break-words flex-1 min-w-0 ${task.status === "DONE" ? "line-through text-zinc-400" : ""}`}>{task.title}</h4>
         
         {/* Status Dropdown */}
         <div className="relative shrink-0">
           <select 
             value={task.status} 
             onChange={handleStatusChange}
-            className={`console-label text-[10px] px-2.5 py-0.5 rounded-full font-semibold cursor-pointer focus:outline-none appearance-none pr-5 ${statusColors[task.status]}`}
+            className={`console-label text-[10px] px-2.5 py-0.5 rounded-full font-bold cursor-pointer focus:outline-none appearance-none pr-5 ${statusColors[task.status]}`}
           >
             <option value="TODO">TODO</option>
             <option value="IN_PROGRESS">IN PROGRESS</option>
@@ -172,12 +172,12 @@ function TaskCard({ task, incidentId, isTeamMember }: { task: Task, incidentId: 
       </div>
 
       {task.description && (
-        <p className={`text-xs break-words whitespace-pre-wrap ${task.status === "DONE" ? "text-gray-400" : "text-gray-500"}`}>{task.description}</p>
+        <p className={`text-xs break-words whitespace-pre-wrap ${task.status === "DONE" ? "text-zinc-400" : "text-zinc-600 font-medium"}`}>{task.description}</p>
       )}
 
       {/* Transparency: Completed By */}
       {task.status === "DONE" && task.statusChangedBy && (
-        <p className="text-[10px] text-green-600/90 italic font-mono">
+        <p className="text-[10px] text-emerald-700 font-mono font-semibold">
           Completed by WORKER-{task.statusChangedBy.slice(0, 4).toUpperCase()}
         </p>
       )}
@@ -185,13 +185,13 @@ function TaskCard({ task, incidentId, isTeamMember }: { task: Task, incidentId: 
       {/* Progress Bar */}
       {totalCount > 0 && task.status !== "DONE" && (
         <div className="space-y-1">
-          <div className="flex justify-between text-[10px] text-gray-500">
+          <div className="flex justify-between text-[10px] font-bold text-zinc-600">
             <span>Progress</span>
             <span>{checkedCount}/{totalCount} ({progressPercent}%)</span>
           </div>
-          <div className="w-full bg-[var(--bg-soft)] border border-gray-700 rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-zinc-100 border border-zinc-200 rounded-full h-1.5 overflow-hidden">
             <div 
-              className="bg-[var(--ink)] h-1.5 rounded-full transition-all duration-300" 
+              className="bg-zinc-950 h-1.5 rounded-full transition-all duration-300" 
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -199,35 +199,35 @@ function TaskCard({ task, incidentId, isTeamMember }: { task: Task, incidentId: 
       )}
 
       {/* Assignees */}
-      <div className="text-[10px] text-gray-500 flex gap-1 flex-wrap items-center">
-        <span className="console-label text-gray-500">Assigned ({task.assigneeIds.length}/{task.members_required || 1}):</span>
+      <div className="text-[10px] text-zinc-600 flex gap-1 flex-wrap items-center">
+        <span className="console-label text-zinc-600 font-bold">Assigned ({task.assigneeIds.length}/{task.members_required || 1}):</span>
         {task.assigneeIds.length > 0 ? (
           task.assigneeIds.map(id => (
-            <span key={id} className="font-mono bg-[var(--bg-soft)] border border-gray-700 px-1.5 py-0.5 rounded text-[var(--ink)] flex items-center gap-1">
+            <span key={id} className="font-mono bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded text-zinc-900 font-bold flex items-center gap-1">
               WORKER-{id.slice(0, 4).toUpperCase()}
               {(isTeamMember || id === deviceId) && task.status !== "DONE" && (
-                <button onClick={() => handleRemoveAssignee(id)} className="text-gray-400 hover:text-red-500 font-bold ml-0.5">×</button>
+                <button onClick={() => handleRemoveAssignee(id)} className="text-zinc-500 hover:text-red-600 font-bold ml-0.5">×</button>
               )}
             </span>
           ))
         ) : (
-          <span className="italic">None</span>
+          <span className="italic text-zinc-400 font-medium">None</span>
         )}
-        {isFull && !isAssignee && task.status !== "DONE" && <span className="text-amber-600 font-semibold ml-1">(Fully Staffed)</span>}
+        {isFull && !isAssignee && task.status !== "DONE" && <span className="text-amber-800 font-bold ml-1">(Fully Staffed)</span>}
       </div>
 
       {/* Subtasks */}
       {totalCount > 0 && (
-        <div className="pt-2 border-t border-gray-800 space-y-1.5">
+        <div className="pt-2 border-t border-zinc-100 space-y-1.5">
           {task.subtasks.map(sub => (
             <label key={sub.id} className="flex items-start gap-2 cursor-pointer group">
               <input 
                 type="checkbox" 
                 checked={sub.checked} 
                 onChange={(e) => handleSubtaskCheck(sub.id, e.target.checked)}
-                className="mt-0.5 rounded bg-gray-800 border-gray-700 text-blue-500 focus:ring-0 focus:ring-offset-0 disabled:opacity-50"
+                className="mt-0.5 rounded border-zinc-400 text-blue-600 focus:ring-0 focus:ring-offset-0 disabled:opacity-50"
               />
-              <span className={`text-xs break-words min-w-0 flex-1 ${sub.checked ? 'text-gray-500 line-through' : 'text-gray-300 group-hover:text-gray-100'}`}>
+              <span className={`text-xs break-words min-w-0 flex-1 font-medium ${sub.checked ? 'text-zinc-400 line-through' : 'text-zinc-800 group-hover:text-zinc-950'}`}>
                 {sub.label}
               </span>
             </label>
@@ -237,23 +237,23 @@ function TaskCard({ task, incidentId, isTeamMember }: { task: Task, incidentId: 
 
       {/* Actions */}
       {task.status !== "DONE" && (
-        <div className="pt-2 border-t border-gray-800 flex gap-2 flex-wrap">
+        <div className="pt-2 border-t border-zinc-100 flex gap-2 flex-wrap">
           <button 
             onClick={handleToggleAssign} 
             disabled={!canClaim}
-            className={`text-[10px] px-2 py-1 rounded-full font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isAssignee ? "bg-red-100 text-red-700 hover:bg-red-200" : "bg-blue-100 text-blue-700 hover:bg-blue-200"}`}
+            className={`text-[10px] px-2.5 py-1 rounded-full font-bold transition-all shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed ${isAssignee ? "bg-amber-600 text-white hover:bg-amber-700" : "bg-blue-600 text-white hover:bg-blue-700"}`}
           >
             {isAssignee ? "Leave Task" : "Claim Task"}
           </button>
           <button 
             onClick={() => setEditing(true)} 
-            className="text-[10px] px-2 py-1 rounded-full font-semibold bg-[var(--bg)] border border-gray-700 text-[var(--ink)] hover:bg-[var(--bg-soft)] transition-colors"
+            className="text-[10px] px-2.5 py-1 rounded-full font-bold bg-white border border-zinc-300 text-zinc-800 hover:bg-zinc-100 transition-colors shadow-2xs"
           >
             Edit
           </button>
           <button 
             onClick={handleDelete} 
-            className="text-[10px] px-2 py-1 rounded-full font-semibold border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+            className="text-[10px] px-2.5 py-1 rounded-full font-bold border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors shadow-2xs"
           >
             Delete
           </button>
@@ -263,7 +263,7 @@ function TaskCard({ task, incidentId, isTeamMember }: { task: Task, incidentId: 
       {/* Optional minimal delete for done tasks */}
       {task.status === "DONE" && (
         <div className="flex justify-end pt-1">
-          <button onClick={handleDelete} className="text-[10px] text-red-900 hover:text-red-500 transition-colors">Delete Task</button>
+          <button onClick={handleDelete} className="text-[10px] font-semibold text-red-600 hover:text-red-800 transition-colors">Delete Task</button>
         </div>
       )}
     </div>
@@ -340,27 +340,27 @@ export function TaskList({ tasks, incidentId, isTeamMember }: { tasks: Task[], i
           value={newTaskTitle}
           onChange={(e) => setNewTaskTitle(e.target.value)}
           placeholder="Add a new task..."
-          className="w-full bg-[var(--bg)] border border-gray-700 rounded-full px-3.5 py-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500"
+          className="w-full bg-white border-2 border-zinc-300 rounded-full px-3.5 py-2 text-xs text-zinc-950 placeholder:text-zinc-400 font-semibold focus:outline-none focus:border-zinc-950 shadow-2xs"
         />
         <div className="flex justify-between items-center gap-2">
-          <label className="text-[11px] text-gray-400 flex items-center gap-1.5 shrink-0">
+          <label className="text-[11px] text-zinc-700 font-bold flex items-center gap-1.5 shrink-0">
             Members Required:
             <input 
               type="number" 
               min="1" 
               value={membersRequired} 
               onChange={(e) => setMembersRequired(Number(e.target.value) || 1)}
-              className="bg-[var(--bg)] border border-gray-700 rounded-md px-1.5 py-1 text-xs text-[var(--ink)] w-12 text-center focus:outline-none focus:border-[var(--ink)]"
+              className="bg-white border border-zinc-300 rounded-md px-1.5 py-1 text-xs text-zinc-950 font-bold w-12 text-center focus:outline-none focus:border-zinc-950"
             />
           </label>
-          <button type="submit" disabled={!newTaskTitle.trim()} className="bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] rounded-full px-4 py-1.5 text-xs font-semibold transition-opacity shrink-0 whitespace-nowrap">
+          <button type="submit" disabled={!newTaskTitle.trim()} className="bg-zinc-950 hover:bg-zinc-800 disabled:opacity-50 text-white rounded-full px-4 py-1.5 text-xs font-bold transition-all shrink-0 whitespace-nowrap shadow-xs">
             Add Task
           </button>
         </div>
       </form>
 
       {allTasks.length === 0 ? (
-        <p className="text-sm text-gray-500 text-center py-6">No tasks assigned.</p>
+        <p className="text-xs text-zinc-500 font-medium text-center py-6 italic">No tasks assigned.</p>
       ) : (
         <div className="space-y-3">
           {allTasks.map(task => (

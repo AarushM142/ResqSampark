@@ -39,12 +39,12 @@ function QuantityInput({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-[11px] font-semibold text-gray-500">{label}</label>
+      <label className="text-xs font-bold text-zinc-700">{label}</label>
       <div className="flex gap-2">
         <select
           onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
           value={value && Object.values(presets).includes(value) ? value : ""}
-          className="flex-1 min-w-0 rounded border border-gray-300 bg-[var(--bg-soft)] text-gray-600 px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--ink)]"
+          className="flex-1 min-w-0 rounded-lg border border-zinc-300 bg-white text-zinc-950 px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-zinc-950 shadow-2xs"
         >
           <option value="">Preset...</option>
           {Object.entries(presets).map(([lbl, qty]) => (
@@ -59,7 +59,7 @@ function QuantityInput({
           placeholder="Custom qty"
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-          className="flex-1 min-w-0 rounded border border-gray-300 bg-[var(--bg-soft)] text-[var(--ink)] px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--ink)]"
+          className="flex-1 min-w-0 rounded-lg border border-zinc-300 bg-white text-zinc-950 px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-zinc-950 shadow-2xs"
         />
       </div>
     </div>
@@ -138,8 +138,8 @@ export function ResourceRequestForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-gray-800 bg-gray-900 p-4 animate-fade-in-up">
-      <h3 className="font-semibold text-gray-100 text-sm">Request Resources</h3>
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border-2 border-zinc-200 bg-white p-4.5 shadow-xs animate-fade-in-up">
+      <h3 className="font-black text-zinc-950 text-sm">Request Resources</h3>
 
       {/* Quantity items */}
       <div className="space-y-3">
@@ -168,7 +168,7 @@ export function ResourceRequestForm({
 
       {/* Boolean items */}
       <div className="space-y-1.5">
-        <label className="console-label text-[11px] font-medium text-gray-400">Additional Resources</label>
+        <label className="console-label text-xs font-bold text-zinc-700">Additional Resources</label>
         <div className="flex gap-2 flex-wrap">
           {(
             [
@@ -181,10 +181,10 @@ export function ResourceRequestForm({
               key={key}
               type="button"
               onClick={() => updateItem(key, !items[key] as ResourceItems[typeof key])}
-              className={`px-3 py-1 rounded text-[11px] font-medium border transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                 items[key]
-                  ? "bg-[var(--ink)] border-[var(--ink)] text-[var(--bg)]"
-                  : "bg-transparent border-gray-700 text-gray-400 hover:border-gray-500"
+                  ? "bg-zinc-950 border-zinc-950 text-white shadow-2xs"
+                  : "bg-white border-zinc-300 text-zinc-700 hover:border-zinc-500 hover:text-zinc-950"
               }`}
             >
               {label}
@@ -195,21 +195,21 @@ export function ResourceRequestForm({
 
       {/* Priority */}
       <div className="space-y-1.5">
-        <label className="console-label text-[11px] font-medium text-gray-400">Priority</label>
+        <label className="console-label text-xs font-bold text-zinc-700">Priority Level</label>
         <div className="flex gap-2 flex-wrap">
           {(["LOW", "MODERATE", "CRITICAL"] as const).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPriority(p)}
-              className={`px-3 py-1 rounded text-[11px] font-semibold border transition-colors ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                 priority === p
                   ? p === "CRITICAL"
-                    ? "bg-red-50 border-red-200 text-red-600"
+                    ? "bg-red-50 border-2 border-red-400 text-red-700 shadow-2xs"
                     : p === "MODERATE"
-                    ? "bg-orange-50 border-orange-200 text-orange-600"
-                    : "bg-yellow-50 border-yellow-200 text-yellow-600"
-                  : "bg-transparent border-gray-300 text-gray-500 hover:border-gray-400"
+                    ? "bg-amber-50 border-2 border-amber-400 text-amber-800 shadow-2xs"
+                    : "bg-emerald-50 border-2 border-emerald-400 text-emerald-800 shadow-2xs"
+                  : "bg-white border border-zinc-300 text-zinc-600 hover:border-zinc-400 hover:text-zinc-950"
               }`}
             >
               {p}
@@ -218,14 +218,14 @@ export function ResourceRequestForm({
         </div>
       </div>
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs font-bold text-red-600 bg-red-50 p-2 rounded border border-red-200">{error}</p>}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 pt-1">
         <button
           type="submit"
           id="submit-resource-btn"
           disabled={submitting || !hasAnyItem}
-          className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-sm font-semibold px-4 py-2 transition-opacity"
+          className="w-full rounded-full bg-zinc-950 hover:bg-zinc-800 disabled:opacity-50 text-white text-xs font-bold px-4 py-2.5 transition-all shadow-xs"
         >
           {submitting ? "Submitting…" : "Submit Request"}
         </button>

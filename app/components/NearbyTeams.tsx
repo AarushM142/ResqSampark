@@ -67,12 +67,12 @@ function MessageComposer({
         value={body}
         onChange={(e) => setBody(e.target.value)}
         placeholder={`Message the ${target.type} team…`}
-        className="flex-1 min-w-0 bg-[var(--bg)] border border-gray-700 rounded-full px-3.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-blue-500"
+        className="flex-1 min-w-0 bg-white border border-zinc-300 rounded-full px-3.5 py-1.5 text-xs text-zinc-950 placeholder:text-zinc-400 font-medium focus:outline-none focus:border-zinc-950 shadow-2xs"
       />
       <button
         onClick={handleSend}
         disabled={sending || !body.trim()}
-        className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] text-xs font-semibold px-3.5 py-1.5 transition-opacity shrink-0"
+        className="rounded-full bg-zinc-950 hover:bg-zinc-800 disabled:opacity-50 text-white text-xs font-bold px-3.5 py-1.5 transition-all shrink-0 shadow-xs"
       >
         {sending ? "Sending…" : "Send"}
       </button>
@@ -117,35 +117,35 @@ export function NearbyTeams({
   if (loading) return null;
 
   return (
-    <div className="rounded-2xl border border-gray-800 bg-gray-900 p-4 space-y-3">
+    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 space-y-3">
       <div>
-        <h3 className="font-semibold text-gray-100 text-sm">Nearby Teams</h3>
-        <p className="text-xs text-gray-500 mt-0.5">
-          Other active teams currently working in {incident.location} — reach out to coordinate.
+        <h3 className="font-bold text-zinc-950 text-sm">Nearby Active Teams</h3>
+        <p className="text-xs text-zinc-500 mt-0.5">
+          Other active teams currently working in {incident.location} — coordinate directly.
         </p>
       </div>
 
       {nearby.length === 0 ? (
-        <p className="text-sm text-gray-600 italic">No other active teams nearby right now.</p>
+        <p className="text-xs text-zinc-500 font-medium italic">No other active teams nearby right now.</p>
       ) : (
         <div className="space-y-2">
           {nearby.map((n) => (
-            <div key={n.id} className="rounded-lg border border-gray-800 bg-[var(--bg)] p-3">
+            <div key={n.id} className="rounded-xl border border-zinc-200 bg-white p-3 shadow-2xs">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="text-xs shrink-0 font-bold bg-gray-900 px-2 py-0.5 rounded text-gray-300 border border-gray-700">{n.type.slice(0,2)}</span>
+                  <span className="text-xs shrink-0 font-bold bg-zinc-100 px-2 py-0.5 rounded text-zinc-900 border border-zinc-300">{n.type.slice(0,2)}</span>
                   <div className="min-w-0">
-                    <TransitionLink href={`/incidents/${n.id}`} direction="forward" className="text-sm font-medium text-gray-100 hover:underline truncate block">
+                    <TransitionLink href={`/incidents/${n.id}`} direction="forward" className="text-xs font-bold text-zinc-950 hover:underline truncate block">
                       {n.type} team
                     </TransitionLink>
-                    <p className="text-[11px] text-gray-500">
+                    <p className="text-[11px] text-zinc-500 font-medium">
                       {n.team_members.length} responder{n.team_members.length !== 1 ? "s" : ""} · {n.status.replace("_", " ").toLowerCase()}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setOpenId(openId === n.id ? null : n.id)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] transition-colors shrink-0"
+                  className="text-xs font-bold px-3 py-1 rounded-full border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 transition-colors shrink-0 shadow-2xs"
                 >
                   {openId === n.id ? "Cancel" : "Message"}
                 </button>

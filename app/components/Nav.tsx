@@ -4,28 +4,27 @@
 // layout) so it's always reachable, Apple.com-style.
 
 import { TransitionLink } from "@/app/components/TransitionLink";
+import NavigationMenuWithActiveItem from "@/components/ui/navigation-menu-05";
 
 export function Nav() {
   return (
-    <div className="border-b border-gray-800 bg-[var(--bg)]/80 backdrop-blur-md">
-      <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div className="border-b border-zinc-200/80 bg-white/70 backdrop-blur-md">
+      <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
         <TransitionLink
           href="/"
           direction="back"
-          className="font-semibold tracking-tight text-[15px] text-gray-100"
+          className="font-black tracking-tight text-[16px] text-zinc-950"
         >
           ResQSampark
         </TransitionLink>
-        <nav className="hidden sm:flex items-center gap-7 text-[13.5px] font-medium text-gray-500">
-          <TransitionLink href="/incidents" direction="back" className="link-underline hover:text-gray-100 transition-colors">
-            Dashboard
-          </TransitionLink>
-        </nav>
+        <div className="hidden sm:flex items-center">
+          <NavigationMenuWithActiveItem />
+        </div>
         <TransitionLink
           href="/incidents?report=true"
           id="report-incident-btn"
           direction="forward"
-          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-[var(--bg)] text-[13px] font-semibold px-4 py-2 transition-all"
+          className="inline-flex items-center gap-1.5 rounded-full bg-zinc-950 hover:bg-zinc-800 active:scale-[0.97] text-white text-[13px] font-bold px-4 py-2 transition-all shadow-xs"
         >
           Report Incident
         </TransitionLink>

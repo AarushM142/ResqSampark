@@ -7,18 +7,18 @@ import type { ActivityLogEntry } from "@/types";
 
 export function ActivityLog({ entries }: { entries: ActivityLogEntry[] }) {
   if (entries.length === 0) {
-    return <p className="text-gray-500 text-sm italic">No activity yet.</p>;
+    return <p className="text-zinc-500 text-xs italic py-4 text-center font-medium">No activity logged yet.</p>;
   }
 
   return (
-    <ol className="space-y-1 font-mono rounded-lg border border-gray-800 bg-gray-900 p-2">
+    <ol className="space-y-1 font-mono rounded-xl border border-zinc-200 bg-zinc-50 p-2.5">
       {[...entries].reverse().map((entry, i) => (
         <li
           key={i}
-          className="flex gap-3 text-[13px] rounded-md px-2 py-1.5 hover:bg-gray-800/60 transition-colors"
+          className="flex gap-3 text-xs rounded-lg px-2.5 py-1.5 hover:bg-zinc-200/60 transition-colors"
         >
-          <span className="text-green-500/70 shrink-0">&gt;</span>
-          <span className="text-gray-500 shrink-0 tabular-nums w-32">
+          <span className="text-emerald-600 font-bold shrink-0">&gt;</span>
+          <span className="text-zinc-500 font-medium shrink-0 tabular-nums w-24 sm:w-28">
             {new Date(entry.timestamp).toLocaleTimeString("en-IN", {
               hour: "2-digit",
               minute: "2-digit",
@@ -26,7 +26,7 @@ export function ActivityLog({ entries }: { entries: ActivityLogEntry[] }) {
               hour12: true,
             })}
           </span>
-          <span className="text-gray-300">{entry.action}</span>
+          <span className="text-zinc-900 font-medium">{entry.action}</span>
         </li>
       ))}
     </ol>

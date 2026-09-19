@@ -29,21 +29,21 @@ export function SyncBar() {
   }
 
   return (
-    <div className="border-b border-gray-800 bg-[var(--bg)]/90 backdrop-blur-md">
-      <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center gap-3 flex-wrap">
+    <div className="border-b border-zinc-200/80 bg-white/70 backdrop-blur-md">
+      <div className="max-w-3xl mx-auto px-4 py-2 flex items-center gap-3 flex-wrap">
         {/* Connectivity indicator */}
-        <div className="flex items-center gap-2 rounded-full border border-gray-800 bg-gray-900 pl-2.5 pr-3 py-1">
-          <span className={`relative inline-flex w-2 h-2 ${isOffline ? "text-red-500" : "text-green-500"}`}>
+        <div className={`flex items-center gap-2 rounded-full border px-3 py-1 shadow-2xs ${isOffline ? "border-rose-300 bg-rose-50" : "border-emerald-300 bg-emerald-50"}`}>
+          <span className={`relative inline-flex w-2 h-2 ${isOffline ? "text-rose-600" : "text-emerald-600"}`}>
             <span
               className={`absolute inline-flex h-full w-full rounded-full ${
-                isOffline ? "bg-red-500" : "bg-green-500"
+                isOffline ? "bg-rose-600" : "bg-emerald-600"
               }`}
             />
             {!isOffline && <span className="radar-ping" />}
           </span>
           <span
-            className={`text-xs font-medium ${
-              isOffline ? "text-red-400" : "text-green-400"
+            className={`text-xs font-bold ${
+              isOffline ? "text-rose-700" : "text-emerald-800"
             }`}
           >
             {isOffline ? "OFFLINE" : "ONLINE"}
@@ -52,8 +52,8 @@ export function SyncBar() {
 
         {/* Pending actions badge */}
         {pendingCount > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-900 border border-amber-700 text-xs px-2.5 py-1 font-medium" style={{ color: "var(--amber-text)" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-alarm-blink" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-300 text-xs px-2.5 py-1 font-bold text-amber-800 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-alarm-blink" />
             <span>{pendingCount} action{pendingCount !== 1 ? "s" : ""} queued</span>
           </span>
         )}
@@ -63,10 +63,10 @@ export function SyncBar() {
           <button
             id="offline-toggle-btn"
             onClick={toggleManualOffline}
-            className={`text-[13px] px-3 py-1.5 rounded-full border font-medium transition-all cursor-pointer ${
+            className={`text-xs px-3 py-1.5 rounded-full border font-bold transition-all cursor-pointer shadow-2xs ${
               manualOffline
-                ? "bg-[var(--accent)] border-[var(--accent)] text-white"
-                : "bg-transparent border-gray-800 text-gray-400 hover:border-gray-600 hover:text-gray-200"
+                ? "bg-rose-600 border-rose-600 text-white shadow-xs"
+                : "bg-white border-zinc-300 text-zinc-800 hover:border-zinc-500 hover:text-zinc-950"
             }`}
           >
             {manualOffline ? "● Offline Mode On" : "Toggle Offline"}
@@ -78,7 +78,7 @@ export function SyncBar() {
               id="sync-now-btn"
               onClick={handleSyncNow}
               disabled={isSyncing}
-              className="text-[13px] px-3 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] disabled:opacity-50 font-medium transition-all cursor-pointer disabled:cursor-default"
+              className="text-xs px-3.5 py-1.5 rounded-full border border-zinc-300 bg-white hover:bg-zinc-50 active:scale-95 text-zinc-950 disabled:opacity-50 font-bold transition-all cursor-pointer disabled:cursor-default shadow-2xs"
             >
               <span className={isSyncing ? "inline-block animate-spin" : "inline-block"}>⟳</span>{" "}
               {isSyncing ? "Syncing…" : "Sync Now"}

@@ -1,25 +1,18 @@
 // app/page.tsx
-// Marketing landing page — the first thing anyone sees when the demo opens.
-// Lives outside the (app) route group so it gets its own nav/footer instead
-// of the in-app SyncBar + Dashboard nav.
+// Marketing landing page — Seamless 3D Spline background with ultra-high contrast typography
 
 import { TransitionLink } from "@/app/components/TransitionLink";
 import { Footer } from "@/app/components/Footer";
-
-const NAV_LINKS = [
-  { label: "Dashboard", href: "/incidents" },
-  { label: "Incidents", href: "/incidents" },
-  { label: "Response Teams", href: "/incidents" },
-  { label: "Resources", href: "/incidents" },
-];
+import { SplineBackground } from "@/app/components/SplineBackground";
+import NavigationMenuWithActiveItem from "@/components/ui/navigation-menu-05";
 
 const STEPS = [
   {
     title: "Report",
     description:
-      "Log an incident in seconds — type, location, severity, and what's needed. From any device, online or off.",
+      "Log an incident in seconds — type, location, severity, and needed supplies. From any device, online or off.",
     icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 21V4a1 1 0 0 1 1-1h9l5 5v6" />
         <path d="M14 3v5h5" />
         <path d="M8 13h6M8 17h4" />
@@ -30,9 +23,9 @@ const STEPS = [
   },
   {
     title: "Coordinate",
-    description: "Claim it, build a team, assign tasks, and keep everyone talking in one shared thread.",
+    description: "Claim it, build a team, assign tasks, and keep everyone communicating in one live shared thread.",
     icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="6" cy="7" r="3" />
         <circle cx="18" cy="7" r="3" />
         <circle cx="12" cy="17" r="3" />
@@ -43,9 +36,9 @@ const STEPS = [
   {
     title: "Resolve",
     description:
-      "Track resource requests through to delivery and close the loop, with a full activity log for every action.",
+      "Track resource requests through delivery and close the loop with an immutable audit log for every action.",
     icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="9" />
         <path d="m8 12.5 2.5 2.5L16 9" />
       </svg>
@@ -55,71 +48,66 @@ const STEPS = [
 
 export default function LandingPage() {
   return (
-    <div className="flex-1 flex flex-col">
-      {/* Nav */}
-      <div className="border-b border-gray-800 bg-[var(--bg)]/80 backdrop-blur-md sticky top-0 z-50">
+    <div className="relative min-h-screen flex-1 flex flex-col overflow-x-hidden selection:bg-black selection:text-white">
+      {/* Full-Page 3D Spline Interactive Background */}
+      <div className="fixed inset-0 z-0 w-full h-full pointer-events-auto">
+        <SplineBackground />
+      </div>
+
+      {/* Floating Glassmorphic Nav */}
+      <header className="relative z-50 border-b border-zinc-200/80 bg-white/70 backdrop-blur-md sticky top-0 shadow-xs">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <TransitionLink href="/" direction="back" className="font-semibold tracking-tight text-[16px] text-gray-100">
+          <TransitionLink href="/" direction="back" className="font-black tracking-tight text-[18px] text-zinc-950">
             ResQSampark
           </TransitionLink>
-          <nav className="hidden md:flex items-center gap-9 text-[14px] font-medium text-gray-500">
-            {NAV_LINKS.map((link) => (
-              <TransitionLink
-                key={link.label}
-                href={link.href}
-                direction="forward"
-                className="link-underline hover:text-gray-100 transition-colors"
-              >
-                {link.label}
-              </TransitionLink>
-            ))}
-          </nav>
+          <div className="hidden md:flex items-center">
+            <NavigationMenuWithActiveItem />
+          </div>
           <TransitionLink
             href="/incidents?report=true"
             direction="forward"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-[var(--bg)] text-[13px] font-semibold px-4 py-2 transition-all"
+            className="inline-flex items-center gap-1.5 rounded-full bg-zinc-950 hover:bg-zinc-800 active:scale-[0.97] text-white text-[13px] font-bold px-4.5 py-2 transition-all shadow-md shadow-black/15"
           >
             Report Incident
           </TransitionLink>
         </div>
-      </div>
+      </header>
 
-      {/* Hero */}
-      <div className="relative">
-        <div className="ambient-field">
-          <div className="ambient-blob ambient-blob--a" />
-          <div className="ambient-blob ambient-blob--b" />
-        </div>
-        <div className="relative max-w-2xl mx-auto text-center px-6 pt-24 pb-20">
-          <div className="text-[12.5px] font-semibold tracking-[0.09em] uppercase text-gray-500 mb-5">
-            Disaster Coordination Network
-          </div>
-          <h1 className="text-[42px] sm:text-[58px] font-semibold tracking-[-0.02em] leading-[1.08] text-gray-100 text-balance">
+      {/* Hero Section */}
+      <section className="relative z-10 flex-1 flex items-center justify-center pt-16 pb-16 sm:pt-24 sm:pb-24 pointer-events-none">
+        <div className="max-w-2xl mx-auto text-center px-6 pointer-events-auto">
+
+          {/* High-Contrast Headline */}
+          <h1 className="text-[46px] sm:text-[64px] font-black tracking-[-0.035em] leading-[1.05] text-zinc-950 text-balance drop-shadow-sm">
             Coordinate relief.
             <br />
             Respond faster.
           </h1>
-          <p className="text-[17px] sm:text-[18px] leading-relaxed text-gray-400 max-w-[520px] mx-auto mt-6 mb-9">
+
+          {/* High-Contrast Subtitle */}
+          <p className="text-[18px] sm:text-[20px] leading-relaxed text-zinc-800 max-w-[560px] mx-auto mt-6 mb-10 font-semibold drop-shadow-xs">
             One shared view of every incident, team, and resource request — built to keep working
             even when the network doesn&apos;t.
           </p>
-          <div className="flex items-center justify-center gap-5 flex-wrap">
+
+          {/* High-Contrast Action Buttons */}
+          <div className="flex items-center justify-center gap-4 flex-wrap">
             <TransitionLink
               href="/incidents?report=true"
               direction="forward"
-              className="inline-flex items-center rounded-full bg-[var(--ink)] hover:opacity-85 active:scale-[0.97] text-[var(--bg)] text-[14.5px] font-semibold px-6 py-3 transition-all"
+              className="inline-flex items-center rounded-full bg-zinc-950 hover:bg-black active:scale-[0.97] text-white text-[15px] font-bold px-7 py-3.5 transition-all shadow-xl shadow-black/25 hover:shadow-2xl border border-black"
             >
               Report an Incident
             </TransitionLink>
             <TransitionLink
               href="/incidents"
               direction="forward"
-              className="group inline-flex items-center gap-1 text-[14.5px] font-semibold text-gray-100 hover:opacity-70 active:scale-[0.97] transition-all"
+              className="group inline-flex items-center gap-2 text-[15px] font-extrabold text-zinc-950 bg-white hover:bg-zinc-100 active:scale-[0.97] px-6 py-3.5 rounded-full border-2 border-zinc-950/30 hover:border-zinc-950 transition-all shadow-lg hover:shadow-xl"
             >
               View live incidents
               <svg
-                width="12"
-                height="12"
+                width="13"
+                height="13"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -133,29 +121,35 @@ export default function LandingPage() {
             </TransitionLink>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* How it works */}
-      <div className="max-w-3xl mx-auto px-6 pb-28 w-full">
-        <h2 className="text-[30px] sm:text-[32px] font-semibold tracking-[-0.01em] text-center text-gray-100 mb-14">
+      {/* How it works: Premium High-Contrast Frosted Glass Cards */}
+      <section className="relative z-10 max-w-5xl mx-auto px-6 pt-8 pb-12 w-full pointer-events-none">
+        <h2 className="text-[32px] sm:text-[38px] font-black tracking-tight text-center text-zinc-950 mb-10 drop-shadow-sm">
           How it works
         </h2>
-        <div className="grid sm:grid-cols-3 gap-12">
+        <div className="grid sm:grid-cols-3 gap-6 pointer-events-auto">
           {STEPS.map((step) => (
-            <div key={step.title} className="group">
-              <div className="text-gray-100 transition-transform duration-300 ease-out group-hover:scale-110">
-                {step.icon}
+            <div
+              key={step.title}
+              className="group rounded-3xl bg-white/95 hover:bg-white backdrop-blur-2xl border-2 border-zinc-200/90 p-7 sm:p-8 shadow-xl shadow-black/5 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+            >
+              <div>
+                <div className="w-14 h-14 rounded-2xl bg-zinc-950 text-white flex items-center justify-center shadow-md mb-6 group-hover:scale-105 transition-transform">
+                  {step.icon}
+                </div>
+                <div className="text-[22px] font-black tracking-tight text-zinc-950 mb-3">
+                  {step.title}
+                </div>
+                <p className="text-[15px] leading-relaxed text-zinc-700 font-semibold">{step.description}</p>
               </div>
-              <div className="text-[18px] font-semibold mt-5 mb-2.5 tracking-[-0.005em] text-gray-100">
-                {step.title}
-              </div>
-              <p className="text-[14px] leading-relaxed text-gray-500">{step.description}</p>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      <Footer />
+      {/* Footer: Compact & Sleek */}
+      <Footer className="relative z-10 border-t border-zinc-200/80 bg-white/70 backdrop-blur-md" />
     </div>
   );
 }

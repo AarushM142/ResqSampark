@@ -18,12 +18,12 @@ export function ResourcesTab({ incident, setIncident, myDeviceId }: ResourcesTab
       {/* LEFT COLUMN: Request Form */}
       <div className="md:col-span-5 lg:col-span-4 space-y-4 md:sticky md:top-20">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-gray-200">Resource Requests</h2>
+          <h2 className="font-black text-zinc-950 text-base">Resource Requests</h2>
           {incident.status !== "RESOLVED" && !incident.deleted && (
             <button
               id="toggle-resource-form-btn"
               onClick={() => setShowResourceForm((v) => !v)}
-              className="text-xs px-3 py-1.5 rounded-full border border-gray-700 hover:border-[var(--ink)] text-gray-400 hover:text-gray-200 transition-colors md:hidden"
+              className="text-xs px-3 py-1.5 rounded-full border border-zinc-300 hover:border-zinc-950 text-zinc-800 font-bold bg-white shadow-2xs md:hidden"
             >
               {showResourceForm ? "Cancel" : "+ Request Resources"}
             </button>
@@ -46,11 +46,11 @@ export function ResourcesTab({ incident, setIncident, myDeviceId }: ResourcesTab
 
       {/* RIGHT COLUMN: Active Requests List */}
       <div className="md:col-span-7 lg:col-span-8 space-y-3">
-        <h3 className="font-semibold text-gray-200 text-sm hidden md:block">Active Requests</h3>
+        <h3 className="font-black text-zinc-950 text-base hidden md:block">Active Requests</h3>
         
         {incident.resource_requests.filter(r => r.status !== "DELIVERED" && r.status !== "CANCELLED").length === 0 ? (
-          <div className="text-center py-12 border border-gray-800 rounded-2xl bg-[var(--bg-soft)] border-dashed">
-            <p className="text-sm text-gray-500">No active resource requests.</p>
+          <div className="text-center py-12 border border-zinc-200 rounded-2xl bg-zinc-50 border-dashed">
+            <p className="text-xs text-zinc-500 font-medium italic">No active resource requests.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
@@ -59,36 +59,37 @@ export function ResourcesTab({ incident, setIncident, myDeviceId }: ResourcesTab
               .map((req) => (
               <div
                 key={req.id}
-                className={`rounded-lg border bg-[var(--bg-soft)] p-4 text-sm space-y-3 overflow-hidden shadow-sm hover:border-[var(--ink)] transition-colors ${
-                  req.priority === "CRITICAL" ? "border-red-400" : "border-gray-800"
+                className={`rounded-2xl border bg-white p-4 text-sm space-y-3 overflow-hidden shadow-xs hover:border-zinc-400 transition-colors ${
+                  req.priority === "CRITICAL" ? "border-red-300 ring-2 ring-red-50" : "border-zinc-200"
                 }`}
               >
-                  {/* Removed hazard-stripe */}
                 <div className="flex justify-between items-center">
-                  <span className="text-[13px] font-medium text-gray-300">Priority: {req.priority}</span>
+                  <span className={`text-xs font-bold ${req.priority === "CRITICAL" ? "text-red-700" : req.priority === "MODERATE" ? "text-amber-800" : "text-zinc-700"}`}>
+                    Priority: {req.priority}
+                  </span>
                   <span
-                    className={`text-[11px] px-2 py-0.5 rounded font-medium ${
+                    className={`text-xs px-2.5 py-0.5 rounded-full font-bold border ${
                       req.status === "PENDING"
-                        ? "bg-yellow-100 text-yellow-700"
+                        ? "bg-amber-50 text-amber-800 border-amber-300"
                         : req.status === "ACCEPTED"
-                        ? "bg-blue-100 text-blue-700"
+                        ? "bg-blue-50 text-blue-700 border-blue-300"
                         : req.status === "DELIVERED"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-800 text-gray-500"
+                        ? "bg-emerald-50 text-emerald-800 border-emerald-300"
+                        : "bg-zinc-100 text-zinc-600 border-zinc-300"
                     }`}
                   >
                     {req.status}
                   </span>
                 </div>
                 
-                <div className="text-[var(--ink)] text-xs font-mono bg-[var(--bg)] p-2 rounded border border-gray-800">
+                <div className="text-zinc-950 text-xs font-mono bg-zinc-50 p-2.5 rounded-xl border border-zinc-200">
                   <ul className="space-y-1">
                     {Object.entries(req.items)
                       .filter(([, v]) => v)
                       .map(([k, v]) => (
                         <li key={k} className="flex justify-between">
-                          <span className="capitalize">{k.replace("_", " ")}</span>
-                          <span className="text-gray-300 font-medium">
+                          <span className="capitalize font-semibold text-zinc-700">{k.replace("_", " ")}</span>
+                          <span className="text-zinc-950 font-bold">
                             {typeof v === "boolean" ? "Yes" : v}
                           </span>
                         </li>
@@ -98,7 +99,7 @@ export function ResourcesTab({ incident, setIncident, myDeviceId }: ResourcesTab
                 
                 {/* Status advance buttons */}
                 {req.status !== "DELIVERED" && req.status !== "CANCELLED" && (
-                  <div className="flex gap-2 pt-2 border-t border-gray-800">
+                  <div className="flex gap-2 pt-2 border-t border-zinc-100">
                     {req.status === "PENDING" && (
                       <button
                         id={`accept-resource-${req.id.slice(0, 8)}`}
@@ -114,7 +115,7 @@ export function ResourcesTab({ incident, setIncident, myDeviceId }: ResourcesTab
                           );
                           if (res.ok) setIncident(await res.json());
                         }}
-                        className="w-full mt-2 text-xs py-2 rounded-full bg-[var(--ink)] hover:opacity-85 text-[var(--bg)] transition-opacity font-semibold"
+                        className="w-full mt-1 text-xs py-2 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white transition-opacity font-bold shadow-xs"
                       >
                         Accept Request
                       </button>
@@ -134,7 +135,7 @@ export function ResourcesTab({ incident, setIncident, myDeviceId }: ResourcesTab
                           );
                           if (res.ok) setIncident(await res.json());
                         }}
-                        className="w-full mt-2 text-xs py-2 rounded-full bg-green-600 hover:bg-green-500 text-white transition-colors font-semibold shadow-[0_0_10px_rgba(34,197,94,0.2)]"
+                        className="w-full mt-1 text-xs py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white transition-colors font-bold shadow-xs"
                       >
                         Mark Delivered
                       </button>

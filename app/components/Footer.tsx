@@ -1,93 +1,166 @@
+"use client";
 // app/components/Footer.tsx
-// Site footer — Minimalist premium dark aesthetic
+// Modern structured multi-column footer for ResQSampark
+// Clean typography, emergency helpline, field alerts input, and live system status
 
+import { useState } from "react";
 import { TransitionLink } from "./TransitionLink";
 
-const COLUMNS: { title: string; items: { label: string; href: string }[] }[] = [
+type FooterLink = {
+  label: string;
+  href: string;
+  isExternal?: boolean;
+};
+
+type FooterColumn = {
+  title: string;
+  links: FooterLink[];
+};
+
+const FOOTER_COLUMNS: FooterColumn[] = [
   {
-    title: "Product",
-    items: [
+    title: "Coordination",
+    links: [
       { label: "Dashboard", href: "/incidents" },
-      { label: "Incidents", href: "/incidents" },
+      { label: "Live Incidents", href: "/incidents" },
       { label: "Report Incident", href: "/incidents?report=true" },
+      { label: "Response Teams", href: "/incidents" },
     ],
   },
   {
     title: "Resources",
-    items: [
-      { label: "Documentation", href: "#" },
-      { label: "Offline Mode", href: "#" },
-      { label: "Activity Log", href: "#" },
+    links: [
+      { label: "Supply Requests", href: "/incidents" },
+      { label: "Mutual Aid Dispatch", href: "/incidents" },
+      { label: "Medical Aid", href: "/incidents" },
+      { label: "Logistics Inventory", href: "/incidents" },
     ],
   },
   {
-    title: "Support",
-    items: [
-      { label: "Emergency Helpline — 112", href: "tel:112" },
-      { label: "Contact", href: "#" },
-      { label: "System Status", href: "#" },
+    title: "Platform",
+    links: [
+      { label: "Offline Mode", href: "/incidents" },
+      { label: "Sync Engine", href: "/incidents" },
+      { label: "PWA Field Install", href: "/incidents" },
+      { label: "Audit Trail", href: "/incidents" },
+    ],
+  },
+  {
+    title: "Emergency",
+    links: [
+      { label: "National Helpline: 112", href: "tel:112", isExternal: true },
+      { label: "NDRF Control Room", href: "https://ndrf.gov.in", isExternal: true },
+      { label: "Disaster Guidelines", href: "/incidents", isExternal: false },
+      { label: "Satellite Relay", href: "/incidents", isExternal: false },
     ],
   },
 ];
 
-export function Footer() {
+export function Footer({
+  className = "border-t border-zinc-200/80 bg-white/70 backdrop-blur-md",
+}: {
+  className?: string;
+}) {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  function handleSubscribe(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubscribed(true);
+    setTimeout(() => {
+      setEmail("");
+      setSubscribed(false);
+    }, 4000);
+  }
+
   return (
-    <footer className="bg-[var(--bg)] border-t border-gray-800">
-      <div className="max-w-4xl mx-auto px-6 pt-14 pb-8">
-        <div className="flex flex-col sm:flex-row justify-between gap-10 pb-10">
-          <div className="max-w-[280px]">
-            <div className="text-[15px] font-semibold mb-3 tracking-tight text-gray-100">
-              ResQSampark
+    <footer className={`${className} transition-colors`}>
+      <div className="mx-auto w-full max-w-5xl px-6 pt-10 pb-6">
+        {/* Top Grid: Brand & Description + 4 Navigation Columns */}
+        <div className="grid gap-8 pb-8 lg:grid-cols-6">
+          {/* Left Column: Brand, Tagline, and Alerts Subscription */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center gap-2 text-zinc-950">
+              <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+              </svg>
+              <span className="font-black tracking-tight text-[15px]">
+                ResQSampark
+              </span>
             </div>
-            <p className="text-[13px] leading-relaxed text-gray-400">
-              Offline-capable disaster coordination for relief workers across Maharashtra.
+            <p className="mt-3 max-w-xs text-xs leading-relaxed text-zinc-600 font-medium">
+              Offline-first disaster coordination portal for relief agencies and volunteer teams.
+              Built to communicate and dispatch even when the grid fails.
             </p>
+
+            {/* Field Alerts Input */}
+            <form onSubmit={handleSubscribe} className="mt-5 max-w-xs">
+              <label htmlFor="footer-alerts-input" className="block text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-1.5">
+                Emergency Dispatch Alerts
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="footer-alerts-input"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="responder@agency.gov"
+                  className="h-8.5 w-full rounded-lg border border-zinc-300 bg-white/90 px-3 text-xs text-zinc-950 placeholder:text-zinc-400 focus:border-zinc-950 focus:outline-none focus:ring-1 focus:ring-zinc-950 shadow-2xs"
+                />
+                <button
+                  type="submit"
+                  className="h-8.5 shrink-0 rounded-lg bg-zinc-950 px-3 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black active:scale-95 shadow-2xs"
+                >
+                  {subscribed ? "Enrolled" : "Alerts"}
+                </button>
+              </div>
+              {subscribed && (
+                <p className="mt-1.5 text-[11px] text-emerald-600 font-semibold">
+                  ✓ Enrolled for priority regional alerts.
+                </p>
+              )}
+            </form>
           </div>
 
-          <div className="flex flex-wrap gap-x-14 gap-y-8">
-            {COLUMNS.map((col) => (
+          {/* Right Columns: Structured Navigation */}
+          <nav className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-4">
+            {FOOTER_COLUMNS.map((col) => (
               <div key={col.title}>
-                <div className="text-[11px] font-semibold uppercase tracking-wider mb-4 text-gray-500">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-zinc-950">
                   {col.title}
-                </div>
-                <div className="flex flex-col gap-3 text-[13px]">
-                  {col.items.map((item) => (
-                    item.href.startsWith("/") ? (
-                      <TransitionLink
-                        key={item.label}
-                        href={item.href}
-                        direction="forward"
-                        className="text-gray-400 hover:text-gray-200 transition-colors"
-                      >
-                        {item.label}
-                      </TransitionLink>
-                    ) : (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        className="text-gray-400 hover:text-gray-200 transition-colors"
-                      >
-                        {item.label}
-                      </a>
-                    )
+                </h3>
+                <ul className="mt-3.5 flex flex-col gap-2.5">
+                  {col.links.map((link) => (
+                    <li key={link.label}>
+                      {link.isExternal ? (
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-zinc-600 font-medium hover:text-zinc-950 transition-colors"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <TransitionLink
+                          href={link.href}
+                          direction="forward"
+                          className="text-xs text-zinc-600 font-medium hover:text-zinc-950 transition-colors"
+                        >
+                          {link.label}
+                        </TransitionLink>
+                      )}
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             ))}
-          </div>
+          </nav>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-6 border-t border-gray-800/60 text-[12px] text-gray-500">
-          <span>© 2026 ResQSampark. Built for relief coordination.</span>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-gray-300 transition-colors">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-gray-300 transition-colors">
-              Terms
-            </a>
-          </div>
-        </div>
       </div>
     </footer>
   );

@@ -41,20 +41,18 @@ export function IncidentCard({ incident, onRefresh }: { incident: Incident, onRe
     <TransitionLink
       href={`/incidents/${incident.id}`}
       direction="forward"
-      className={`group block rounded-2xl border bg-[var(--bg)] hover:border-[var(--ink)]/25 hover:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 transition-all duration-300 ease-out p-4 space-y-3 relative overflow-hidden ${
-        isCritical ? "border-[var(--accent)]/30" : "border-gray-800"
+      className={`group block rounded-2xl border bg-white hover:border-zinc-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ease-out p-4.5 space-y-3.5 relative overflow-hidden ${
+        isCritical ? "border-red-300 ring-2 ring-red-50" : "border-zinc-200"
       }`}
     >
-      {/* Removed hazard-stripe */}
-
       {/* Header row */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-3 min-w-0">
           <div className="min-w-0">
-            <p className="font-semibold text-gray-100 truncate">
+            <p className="font-bold text-zinc-950 text-[15px] truncate">
               {incident.type} — {incident.location}
             </p>
-            <p className="text-[12px] text-gray-500 mt-0.5">
+            <p className="text-xs text-zinc-500 mt-0.5 font-medium">
               {incident.location} · ID {incident.id.slice(0, 6)}
             </p>
           </div>
@@ -64,15 +62,15 @@ export function IncidentCard({ incident, onRefresh }: { incident: Incident, onRe
 
       {/* Affected + status row */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <span className="text-sm text-gray-400">
+        <span className="text-xs font-semibold text-zinc-700">
           {incident.affected_count.toLocaleString("en-IN")} affected
         </span>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {incident.status === "UNASSIGNED" && (
             <button
               disabled={claiming}
               onClick={handleClaim}
-              className="text-xs font-semibold px-3.5 py-1.5 rounded-full border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--bg)] transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-default"
+              className="text-xs font-bold px-3.5 py-1 rounded-full bg-zinc-950 text-white hover:bg-zinc-800 active:scale-95 transition-all disabled:opacity-50 cursor-pointer disabled:cursor-default shadow-xs"
             >
               {claiming ? "Claiming…" : "Claim"}
             </button>
@@ -83,14 +81,14 @@ export function IncidentCard({ incident, onRefresh }: { incident: Incident, onRe
 
       {/* Team progress sub-line for RECRUITING / IN_PROGRESS */}
       {incident.status === "RECRUITING" && (
-        <div className="space-y-1">
-          <p className="text-xs" style={{ color: "var(--amber-text)" }}>
+        <div className="space-y-1.5">
+          <p className="text-xs font-bold text-amber-800">
             {incident.team_members.length}/{incident.team_size_needed} team —{" "}
             {needed > 0 ? `Needs ${needed} more` : "Team full, ready to start"}
           </p>
-          <div className="w-full bg-gray-800 rounded-full h-1">
+          <div className="w-full bg-zinc-100 border border-zinc-200 rounded-full h-2 overflow-hidden">
             <div
-              className="bg-amber-500 h-1 rounded-full transition-all duration-300"
+              className="bg-amber-500 h-2 rounded-full transition-all duration-300"
               style={{
                 width: `${Math.min(
                   100,
@@ -102,16 +100,16 @@ export function IncidentCard({ incident, onRefresh }: { incident: Incident, onRe
         </div>
       )}
       {incident.status === "IN_PROGRESS" && (
-        <p className="text-xs" style={{ color: "var(--blue-text)" }}>
+        <p className="text-xs font-bold text-blue-700">
           Team active — {incident.team_members.length} members
         </p>
       )}
 
       {/* Description preview */}
-      <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{incident.description}</p>
+      <p className="text-xs text-zinc-700 line-clamp-2 leading-relaxed">{incident.description}</p>
 
       {/* Footer: resource requests count + updated time */}
-      <div className="flex items-center justify-between text-xs text-gray-600 pt-1 border-t border-gray-800 font-mono">
+      <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-2 border-t border-zinc-100 font-mono font-medium">
         <span>
           {incident.resource_requests.length > 0
             ? `${incident.resource_requests.length} resource request${incident.resource_requests.length > 1 ? "s" : ""}`

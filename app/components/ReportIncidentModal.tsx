@@ -119,17 +119,17 @@ export function ReportIncidentModal({
       
       {/* Modal */}
       <div 
-        className="relative w-full max-w-xl bg-gray-900 border border-gray-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up"
+        className="relative w-full max-w-xl bg-white border border-zinc-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up"
       >
         <div className="p-6 overflow-y-auto">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-100">Report Incident</h2>
-              <p className="text-sm text-gray-400 mt-1">Submit a new disaster report to the network.</p>
+              <h2 className="text-xl sm:text-2xl font-black text-zinc-950">Report Incident</h2>
+              <p className="text-xs text-zinc-500 mt-1 font-medium">Submit a new disaster report to the network.</p>
             </div>
             <button 
               onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-300 hover:bg-gray-800 rounded-full transition-colors"
+              className="p-2 text-zinc-400 hover:text-zinc-950 hover:bg-zinc-100 rounded-full transition-colors cursor-pointer"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -138,17 +138,17 @@ export function ReportIncidentModal({
             </button>
           </div>
 
-          <form id="report-form" onSubmit={handleSubmit} className="space-y-5">
+          <form id="report-form" onSubmit={handleSubmit} className="space-y-4">
             {/* Incident type */}
             <div className="space-y-1.5">
-              <label htmlFor="incident-type" className="text-sm font-medium text-gray-300">
+              <label htmlFor="incident-type" className="text-xs font-bold text-zinc-700">
                 Incident Type
               </label>
               <select
                 id="incident-type"
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full rounded-xl border border-gray-700 bg-gray-950/50 text-gray-100 px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full rounded-xl border border-zinc-300 bg-white text-zinc-950 px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-zinc-950 transition-colors shadow-2xs"
               >
                 {INCIDENT_TYPES.map((t) => (
                   <option key={t} value={t}>
@@ -160,14 +160,14 @@ export function ReportIncidentModal({
 
             {/* Location */}
             <div className="space-y-1.5">
-              <label htmlFor="location" className="text-sm font-medium text-gray-300">
+              <label htmlFor="location" className="text-xs font-bold text-zinc-700">
                 Location
               </label>
               <select
                 id="location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full rounded-xl border border-gray-700 bg-gray-950/50 text-gray-100 px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full rounded-xl border border-zinc-300 bg-white text-zinc-950 px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-zinc-950 transition-colors shadow-2xs"
               >
                 {LOCATIONS.map((l) => (
                   <option key={l} value={l}>
@@ -183,7 +183,7 @@ export function ReportIncidentModal({
                   placeholder="Enter location…"
                   value={customLocation}
                   onChange={(e) => setCustomLocation(e.target.value)}
-                  className="w-full rounded-xl border border-gray-700 bg-gray-950/50 text-gray-100 px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-500 mt-2 transition-colors"
+                  className="w-full rounded-xl border border-zinc-300 bg-white text-zinc-950 px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-zinc-950 mt-2 transition-colors shadow-2xs"
                 />
               )}
             </div>
@@ -191,7 +191,7 @@ export function ReportIncidentModal({
             {/* Affected count + severity */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="affected-count" className="text-sm font-medium text-gray-300">
+                <label htmlFor="affected-count" className="text-xs font-bold text-zinc-700">
                   People Affected
                 </label>
                 <input
@@ -202,15 +202,15 @@ export function ReportIncidentModal({
                   onChange={(e) =>
                     setAffectedCount(e.target.value === "" ? "" : Number(e.target.value))
                   }
-                  className="w-full rounded-xl border border-gray-700 bg-gray-950/50 text-gray-100 px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full rounded-xl border border-zinc-300 bg-white text-zinc-950 px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-zinc-950 transition-colors shadow-2xs"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="severity" className="text-sm font-medium text-gray-300">
+                <label htmlFor="severity" className="text-xs font-bold text-zinc-700">
                   Severity
                   {!severityOverride && (
-                    <span className="ml-1 text-gray-500 font-normal">
+                    <span className="ml-1 text-zinc-500 font-normal">
                       (auto)
                     </span>
                   )}
@@ -223,22 +223,22 @@ export function ReportIncidentModal({
                       e.target.value as "" | "LOW" | "MODERATE" | "CRITICAL"
                     )
                   }
-                  className={`w-full rounded-xl border px-3.5 py-2.5 text-sm focus:outline-none transition-colors ${
-                    (severityOverride || suggestedSeverity) === "CRITICAL" ? "border-red-500/50 bg-red-950/20 text-red-100" :
-                    (severityOverride || suggestedSeverity) === "MODERATE" ? "border-orange-500/50 bg-orange-950/20 text-orange-100" :
-                    "border-yellow-500/50 bg-yellow-950/20 text-yellow-100"
+                  className={`w-full rounded-xl border px-3.5 py-2.5 text-xs font-bold focus:outline-none transition-colors shadow-2xs ${
+                    (severityOverride || suggestedSeverity) === "CRITICAL" ? "border-red-400 bg-red-50 text-red-700" :
+                    (severityOverride || suggestedSeverity) === "MODERATE" ? "border-amber-400 bg-amber-50 text-amber-800" :
+                    "border-emerald-400 bg-emerald-50 text-emerald-800"
                   }`}
                 >
-                  <option value="LOW" className="bg-gray-900 text-gray-100">LOW</option>
-                  <option value="MODERATE" className="bg-gray-900 text-gray-100">MODERATE</option>
-                  <option value="CRITICAL" className="bg-gray-900 text-gray-100">CRITICAL</option>
+                  <option value="LOW">LOW</option>
+                  <option value="MODERATE">MODERATE</option>
+                  <option value="CRITICAL">CRITICAL</option>
                 </select>
               </div>
             </div>
 
             {/* Description */}
             <div className="space-y-1.5">
-              <label htmlFor="description" className="text-sm font-medium text-gray-300">
+              <label htmlFor="description" className="text-xs font-bold text-zinc-700">
                 Description
               </label>
               <textarea
@@ -247,13 +247,13 @@ export function ReportIncidentModal({
                 placeholder="Describe the situation and immediate needs…"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-xl border border-gray-700 bg-gray-950/50 text-gray-100 px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-500 resize-none transition-colors"
+                className="w-full rounded-xl border border-zinc-300 bg-white text-zinc-950 px-3.5 py-2.5 text-xs font-medium focus:outline-none focus:border-zinc-950 resize-none transition-colors shadow-2xs"
               />
             </div>
 
             {/* Team size needed */}
             <div className="space-y-1.5">
-              <label htmlFor="team-size" className="text-sm font-medium text-gray-300">
+              <label htmlFor="team-size" className="text-xs font-bold text-zinc-700">
                 Team Size Needed
               </label>
               <input
@@ -265,13 +265,13 @@ export function ReportIncidentModal({
                 onChange={(e) =>
                   setTeamSizeNeeded(e.target.value === "" ? "" : Number(e.target.value))
                 }
-                className="w-full rounded-xl border border-gray-700 bg-gray-950/50 text-gray-100 px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full rounded-xl border border-zinc-300 bg-white text-zinc-950 px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-zinc-950 transition-colors shadow-2xs"
               />
             </div>
 
             {/* Error */}
             {error && (
-              <div className="rounded-lg border border-red-800 bg-red-950/30 p-3 text-red-400 text-sm flex items-start gap-2">
+              <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-red-700 text-xs font-bold flex items-start gap-2">
                 <span>{error}</span>
               </div>
             )}
@@ -279,11 +279,11 @@ export function ReportIncidentModal({
         </div>
         
         {/* Footer sticky action area */}
-        <div className="p-4 border-t border-gray-800 bg-gray-900/90 backdrop-blur flex justify-end gap-3 mt-auto">
+        <div className="p-4 border-t border-zinc-200 bg-zinc-50 flex justify-end gap-3 mt-auto">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-gray-700 hover:border-gray-500 hover:bg-gray-800 text-gray-300 font-medium px-5 py-2 text-sm transition-colors"
+            className="rounded-full border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 font-bold px-5 py-2 text-xs transition-colors shadow-2xs cursor-pointer"
           >
             Cancel
           </button>
@@ -292,7 +292,7 @@ export function ReportIncidentModal({
             form="report-form"
             id="submit-incident-btn"
             disabled={submitting}
-            className="rounded-full bg-[var(--ink)] hover:opacity-85 disabled:opacity-50 text-[var(--bg)] font-semibold px-6 py-2 text-sm transition-opacity shadow-lg"
+            className="rounded-full bg-zinc-950 hover:bg-zinc-800 disabled:opacity-50 text-white font-bold px-6 py-2 text-xs transition-all shadow-md cursor-pointer"
           >
             {submitting ? "Reporting…" : "Report Incident"}
           </button>
